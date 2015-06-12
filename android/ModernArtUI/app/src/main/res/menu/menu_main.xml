@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/reset"
+        android:title="@string/regen"
+        android:orderInCategory="0" />
+
+    <item
+        android:id="@+id/MOMA_url"
+        android:title="@string/MOMA_url"
+        android:orderInCategory="1" />
+
+    <item
+        android:id="@+id/About"
+        android:title="@string/about"
+        android:orderInCategory="2" />
+
+    <item
+        android:id="@+id/customize"
+        android:title="@string/settings"
+        android:orderInCategory="3" />
+
+
+</menu>

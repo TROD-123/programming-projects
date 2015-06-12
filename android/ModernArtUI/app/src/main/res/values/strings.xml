@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Modern Art UI</string>
+
+    <!-- Action Bar Resources -->
+    <string name="settings">Customize</string>
+    <string name="regen">Regenerate</string>
+    <string name="MOMA_url">More information</string>
+    <string name="about">About</string>
+
+    <string name="save">Save settings</string>
+
+    <!-- ActionDialog resoures -->
+    <string name="MOMA_msg">Inspired by modern art masters such as Piet
+                            Mondrian and Ben Nicholson.\n
+                            \nCheck out the Museum of Modern Art!</string>
+    <string name="MOMA_yes">Visit MOMA</string>
+    <string name="MOMA_no">Not Now</string>
+
+    <string name="app_about_title">About</string>
+    <string name="app_about_msg">Modern Art UI app created by Teddy Rodriguez\n
+                                    \nFor a final project in Dr. Adam Porter\'s
+                                    Programming Mobile Applications for Android
+                                    Handheld Systems: Part 1\n
+                                    \nA University of Maryland course
+                                    hosted by Coursera</string>
+
+
+    <!-- SettingsUI resources -->
+    <string name="columns">Set number of columns</string>
+    <string name="rectangles">Set number of rectangles per column</string>
+
+</resources>

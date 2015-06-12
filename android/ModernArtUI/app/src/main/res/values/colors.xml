@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="Left1ColorStart">#ffffffff</color>
+    <color name="Left2ColorStart">#ff607d8b</color>
+    <color name="Right1ColorStart">#ff009688</color>
+    <color name="Right2ColorStart">#ff00bcd4</color>
+    <color name="Right3ColorStart">#ff03a9f4</color>
+
+    <color name="Left1ColorEnd">#ffffffff</color>
+    <color name="Left2ColorEnd">#ff9c27b0</color>
+    <color name="Right1ColorEnd">#fff44336</color>
+    <color name="Right2ColorEnd">#ff795548</color>
+    <color name="Right3ColorEnd">#ffffeb3b</color>
+</resources>
