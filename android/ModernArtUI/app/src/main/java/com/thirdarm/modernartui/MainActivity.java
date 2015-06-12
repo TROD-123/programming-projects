@@ -58,7 +58,6 @@ public class MainActivity extends Activity {
     private static final String MOMA_URL = "http://www.moma.org";
     public RelativeLayout globalLayout;
     public LinearLayout mainLayout;
-//    public static final String RECTANGLES = "rectangles";
 
     // UI maximum rectangles
     public static final int MAX_LINEAR_LAYOUTS = 5;
@@ -72,17 +71,7 @@ public class MainActivity extends Activity {
     // one DialogFragment instance for all Dialogs
     private DialogFragment mDialog;
 
-    // UI elements
-//    private LinearLayout mLeftLayout, mCenterLayout, mRightLayout;
-
     private SeekBar mSeekBar;
-
-//    private TextView mLeft1, mLeft2, mLeft3, mLeft4, mLeft5,
-//            mRight1, mRight2, mRight3, mRight4, mRight5,
-//            mCenter1, mCenter2, mCenter3, mCenter4, mCenter5;
-
-//    public int mLeft2ColorStart, mRight1ColorStart, mRight2ColorStart, mRight3ColorStart,
-//                mLeft2ColorEnd, mRight1ColorEnd, mRight2ColorEnd, mRight3ColorEnd;
 
     // ArrayList to store rectangles (custom wrapper class) and each of their properties:
     //  -TextView
@@ -121,113 +110,26 @@ public class MainActivity extends Activity {
                 pv = progress;
                 max = seekBar.getMax() * 1.0;
 
-
-                // Use Color.parseColor("#<hex>") to return int value of hex color representation
-                // or <hex> of color value (0xAARRGGBB) where AA is the alpha value of color
-                // TD: Figure out how to get smooth color transitions after incrementing SeekBar
-
-                // Get differences in each color component of start and end colors
-
-
-//                int[] mLeft2dColors = new int[3];
-//                mLeft2dColors[0] = Color.red(mLeft2ColorEnd) - Color.red(mLeft2ColorStart);
-//                mLeft2dColors[1] = Color.green(mLeft2ColorEnd) - Color.green(mLeft2ColorStart);
-//                mLeft2dColors[2] = Color.blue(mLeft2ColorEnd) - Color.blue(mLeft2ColorStart);
-//
-//                int[] mRight1dColors = new int[3];
-//                mRight1dColors[0] = Color.red(mRight1ColorEnd) - Color.red(mRight1ColorStart);
-//                mRight1dColors[1] = Color.green(mRight1ColorEnd) - Color.green(mRight1ColorStart);
-//                mRight1dColors[2] = Color.blue(mRight1ColorEnd) - Color.blue(mRight1ColorStart);
-//
-//                int[] mRight2dColors = new int[3];
-//                mRight2dColors[0] = Color.red(mRight2ColorEnd) - Color.red(mRight2ColorStart);
-//                mRight2dColors[1] = Color.green(mRight2ColorEnd) - Color.green(mRight2ColorStart);
-//                mRight2dColors[2] = Color.blue(mRight2ColorEnd) - Color.blue(mRight2ColorStart);
-//
-//                int[] mRight3dColors = new int[3];
-//                mRight3dColors[0] = Color.red(mRight3ColorEnd) - Color.red(mRight3ColorStart);
-//                mRight3dColors[1] = Color.green(mRight3ColorEnd) - Color.green(mRight3ColorStart);
-//                mRight3dColors[2] = Color.blue(mRight3ColorEnd) - Color.blue(mRight3ColorStart);
-
-//                // for debugging and testing getResources() to get hex representation of colors
-//                //  defined in colors.xml instead of the resource location
-//                // displays rgb values and differences of left2 colors in left1 box
-//                mLeft1.setText("" + Color.red(mLeft2ColorStart) + " " + Color.red(mLeft2ColorEnd)
-//                        + " " + mLeft2dColors[0]
-//                        + " " + ((int)(Color.red(mLeft2ColorStart) + pv / 100.0 * mLeft2dColors[0])) + "\n"
-//
-//                        + Color.green(mLeft2ColorStart) + " " + Color.green(mLeft2ColorEnd)
-//                        + " " + mLeft2dColors[0]
-//                        + " " + ((int)(Color.green(mLeft2ColorStart) + pv / 100.0 * mLeft2dColors[0])) + "\n"
-//
-//                        + Color.blue(mLeft2ColorStart) + " " + Color.blue(mLeft2ColorEnd)
-//                        + " " + mLeft2dColors[0]
-//                        + " " + ((int)(Color.blue(mLeft2ColorStart) + pv / 100.0 * mLeft2dColors[0])) + "\n\n"
-//
-//                        + pv + "\n\n"
-//
-//                        + (R.color.Left2ColorStart == mLeft2ColorStart) + "\n"
-//                        + R.color.Left2ColorStart + " " + mLeft2ColorStart);
-
-
                 // Set the background colors based on SeekBar thumb location
-
                 for (Rectangle rectangle : rectangles) {
                     for (int i = 0; i < rectangle.getDColors().length; i++) {
                         rectangle.getTextView().setBackgroundColor(Color
-                                        .rgb((int) (Color.red(rectangle.getColorStart()) + pv / max * rectangle.getDColors()[0]),
-                                                (int) (Color.green(rectangle.getColorStart()) + pv / max * rectangle.getDColors()[1]),
-                                                (int) (Color.blue(rectangle.getColorStart()) + pv / max * rectangle.getDColors()[2]))
+                                        .rgb((int) (Color.red(rectangle.getColorStart()) +
+                                                        pv / max * rectangle.getDColors()[0]),
+                                                (int) (Color.green(rectangle.getColorStart()) +
+                                                        pv / max * rectangle.getDColors()[1]),
+                                                (int) (Color.blue(rectangle.getColorStart()) +
+                                                        pv / max * rectangle.getDColors()[2]))
                         );
                     }
                 }
-
-//                mLeft2.setBackgroundColor(Color
-//                                .rgb(((int) (Color.red(mLeft2ColorStart) + pv / 100.0 * mLeft2dColors[0])),
-//                                        ((int) (Color.green(mLeft2ColorStart) + pv / 100.0 * mLeft2dColors[1])),
-//                                        ((int) (Color.blue(mLeft2ColorStart) + pv / 100.0 * mLeft2dColors[2]))
-//                                )
-//                );
-//
-//                mRight1.setBackgroundColor(Color
-//                                .rgb(((int) (Color.red(mRight1ColorStart) + pv / 100.0 * mRight1dColors[0])),
-//                                        ((int) (Color.green(mRight1ColorStart) + pv / 100.0 * mRight1dColors[1])),
-//                                        ((int) (Color.blue(mRight1ColorStart) + pv / 100.0 * mRight1dColors[2]))
-//                                )
-//                );
-//
-//                mRight2.setBackgroundColor(Color
-//                                .rgb(((int) (Color.red(mRight2ColorStart) + pv / 100.0 * mRight2dColors[0])),
-//                                        ((int) (Color.green(mRight2ColorStart) + pv / 100.0 * mRight2dColors[1])),
-//                                        ((int) (Color.blue(mRight2ColorStart) + pv / 100.0 * mRight2dColors[2]))
-//                                )
-//                );
-//
-//                mRight3.setBackgroundColor(Color
-//                                .rgb(((int) (Color.red(mRight3ColorStart) + pv / 100.0 * mRight3dColors[0])),
-//                                        ((int) (Color.green(mRight3ColorStart) + pv / 100.0 * mRight3dColors[1])),
-//                                        ((int) (Color.blue(mRight3ColorStart) + pv / 100.0 * mRight3dColors[2]))
-//                                )
-//                );
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-//                //For testing SeekBar
-//                Toast.makeText(getApplicationContext(), "Started tracking seekbar",
-//                        Toast.LENGTH_SHORT).show();
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-//                //For testing SeekBar
-//                Toast.makeText(getApplicationContext(), "Stopped tracking seekbar",
-//                        Toast.LENGTH_SHORT).show();
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 
@@ -334,65 +236,10 @@ public class MainActivity extends Activity {
             }
         }
 
-
-        // Old code. xml defines UI
-//        // LinearLayouts
-//        mLeftLayout = (LinearLayout) findViewById(R.id.leftLayout);
-//        mCenterLayout = (LinearLayout) findViewById(R.id.centerLayout);
-//        mRightLayout = (LinearLayout) findViewById(R.id.rightLayout);
-//
-//        // Put LinearLayouts into ArrayList
-//        linearLayouts.add(mLeftLayout); linearLayouts.add(mCenterLayout);
-//        linearLayouts.add(mRightLayout);
-//
-//
-//        // ColorBox TextViews (i.e. Rectangles)
-//        mLeft1 = (TextView) findViewById(R.id.left1);
-//        mLeft2 = (TextView) findViewById(R.id.left2);
-//        mLeft3 = (TextView) findViewById(R.id.left3);
-//        mLeft4 = (TextView) findViewById(R.id.left4);
-//        mLeft5 = (TextView) findViewById(R.id.left5);
-//
-//        mCenter1 = (TextView) findViewById(R.id.center1);
-//        mCenter2 = (TextView) findViewById(R.id.center2);
-//        mCenter3 = (TextView) findViewById(R.id.center3);
-//        mCenter4 = (TextView) findViewById(R.id.center4);
-//        mCenter5 = (TextView) findViewById(R.id.center5);
-//
-//        mRight1 = (TextView) findViewById(R.id.right1);
-//        mRight2 = (TextView) findViewById(R.id.right2);
-//        mRight3 = (TextView) findViewById(R.id.right3);
-//        mRight4 = (TextView) findViewById(R.id.right4);
-//        mRight5 = (TextView) findViewById(R.id.right5);
-//
-//        // Put TextViews into ArrayList
-//        textViews.add(mLeft1); textViews.add(mLeft2); textViews.add(mLeft3);
-//        textViews.add(mLeft4); textViews.add(mLeft5);
-//
-//        textViews.add(mCenter1);textViews.add(mCenter2); textViews.add(mCenter3);
-//        textViews.add(mCenter4); textViews.add(mCenter5);
-//
-//        textViews.add(mRight1);textViews.add(mRight2); textViews.add(mRight3);
-//        textViews.add(mRight4); textViews.add(mRight5);
-
-
         // SeekBar
         mSeekBar = (SeekBar) findViewById(R.id.seekBar);
         mSeekBar.setMax(1000);
         mSeekBar.bringToFront();
-
-//        // Retrieving color values from res/values/colors.xml
-//        Resources res = getResources(); // this can only be called after an Activity
-//                                        // has been instantiated, otherwise the app
-//                                        // will crash
-//        mLeft2ColorStart = res.getColor(R.color.Left2ColorStart);
-//        mRight1ColorStart = res.getColor(R.color.Right1ColorStart);
-//        mRight2ColorStart = res.getColor(R.color.Right2ColorStart);
-//        mRight3ColorStart = res.getColor(R.color.Right3ColorStart);
-//        mLeft2ColorEnd = res.getColor(R.color.Left2ColorEnd);
-//        mRight1ColorEnd = res.getColor(R.color.Right1ColorEnd);
-//        mRight2ColorEnd = res.getColor(R.color.Right2ColorEnd);
-//        mRight3ColorEnd = res.getColor(R.color.Right3ColorEnd);
     }
 
     // Gives the rectangles random properties (size and start/end colors)
@@ -408,32 +255,6 @@ public class MainActivity extends Activity {
                     LinearLayout.LayoutParams.MATCH_PARENT, rand.nextInt(MAX_WEIGHT) + 1));
         }
 
-        // Old code, given that LinearLayouts were already set in xml_layout
-//        // counter to make sure that there is at least one LinearLayout with weight > 0 otherwise
-//        // app will crash
-//        int columnsLost = 0;
-//
-//        // randomly set weights for LinearLayouts
-//        for (LinearLayout linearLayout : linearLayouts) {
-//
-//            // if 2 columns have weight == 0, make sure that the third column has weight > 0 so it
-//            // is visible
-//            int weight;
-//            if (columnsLost > 1) { weight = 1; }
-//            else { weight = rand.nextInt(MAX_WEIGHT); }
-//
-//            linearLayout.setLayoutParams(new LinearLayout.LayoutParams(0,
-//                    ViewGroup.LayoutParams.MATCH_PARENT, weight));
-//
-//            // if weight is 0, remove all TextViews in that LinearLayout. increment columnsLost
-//            if (weight == 0) {
-//                columnsLost++;
-//                for (int i = 0; i < linearLayout.getChildCount(); i++) {
-//                    textViews.remove(linearLayout.getChildAt(i));
-//                }
-//            }
-//        }
-
         // for choosing one TextView at random to be white
         int white = rand.nextInt(textViews.size());
         boolean done = false;
@@ -443,8 +264,8 @@ public class MainActivity extends Activity {
 
             // randomly set weights for TextViews
             textView.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 0,
-                    rand.nextInt(MAX_WEIGHT) + 1)
+                            ViewGroup.LayoutParams.MATCH_PARENT, 0,
+                            rand.nextInt(MAX_WEIGHT) + 1)
             );
 
             int[] colors = new int[2], dColors = new int[3];
@@ -470,7 +291,7 @@ public class MainActivity extends Activity {
             dColors[1] = Color.green(colors[1]) - Color.green(colors[0]);
             dColors[2] = Color.blue(colors[1]) - Color.blue(colors[0]);
 
-             // create new Rectangle and add to ArrayList of Rectangles
+            // create new Rectangle and add to ArrayList of Rectangles
             rectangles.add(new Rectangle(textView, dColors, colors[0], colors[1]));
 
             // set initial rectangle colors
@@ -570,14 +391,6 @@ public class MainActivity extends Activity {
                         .putExtra(NUM_LINEAR_LAYOUTS, nLinearLayouts)
                         .putExtra(NUM_TEXT_VIEWS, nTextViews);
                 startActivityForResult(intent, SETUI_REQUEST);
-
-//                // show DialogFragment full screen
-//                FragmentManager fm = getFragmentManager();
-//                mDialog = new SetUIFragment();
-//                FragmentTransaction ft = fm.beginTransaction();
-//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//                ft.add(android.R.id.content, mDialog)
-//                        .addToBackStack(null).commit();
         }
     }
 
@@ -603,25 +416,6 @@ public class MainActivity extends Activity {
     //
 
     public static class MOMAFragment extends DialogFragment {
-
-//        //Probably only needed when DialogFragment is in another .java file
-//        public interface DialogListener {
-//            public void onDialogPositiveClick(DialogFragment dialog);
-//            public void onDialogNegativeClick(DialogFragment dialog);
-//        }
-//
-//        DialogListener mListener;
-//
-//        @Override
-//        public void onAttach(Activity activity) {
-//            super.onAttach(activity);
-//            try {
-//                mListener = (DialogListener) activity;
-//            } catch (ClassCastException e) {
-//                throw new ClassCastException(activity.toString()
-//                        + " must implement DialogListener");
-//            }
-//        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
