@@ -91,6 +91,8 @@ public class MainActivity extends Activity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             TableLayout mDateTable = (TableLayout) rootView.findViewById(R.id.prospectiveCounter);
+            final int titleSize = 17;
+            final int textSize = 16;
 
             // play with dates
             Calendar c = Calendar.getInstance();
@@ -101,31 +103,37 @@ public class MainActivity extends Activity {
 
             TextView day = new TextView(getActivity());
             day.setText("Count");
+            day.setTextSize(titleSize);
             day.setPadding(20, 10, 20, 10);
             titleRow.addView(day);
 
             TextView proDate = new TextView(getActivity());
             proDate.setText("Date");
+            proDate.setTextSize(titleSize);
             proDate.setPadding(20, 10, 40, 10);
             titleRow.addView(proDate);
 
             TextView day2 = new TextView(getActivity());
             day2.setText("Count");
+            day2.setTextSize(titleSize);
             day2.setPadding(40, 10, 20, 10);
             titleRow.addView(day2);
 
             TextView proDate2 = new TextView(getActivity());
             proDate2.setText("Date");
+            proDate2.setTextSize(titleSize);
             proDate2.setPadding(20, 10, 40, 10);
             titleRow.addView(proDate2);
 
             TextView day3 = new TextView(getActivity());
             day3.setText("Count");
+            day3.setTextSize(titleSize);
             day3.setPadding(40, 10, 20, 10);
             titleRow.addView(day3);
 
             TextView proDate3 = new TextView(getActivity());
             proDate3.setText("Date");
+            proDate3.setTextSize(titleSize);
             proDate3.setPadding(20, 10, 40, 10);
             titleRow.addView(proDate3);
 
@@ -145,31 +153,37 @@ public class MainActivity extends Activity {
 
                 TextView counter = new TextView(getActivity());
                 counter.setText((i+1) + "");
+                counter.setTextSize(textSize);
                 counter.setPadding(20, 5, 20, 5);
                 row.addView(counter);
 
                 TextView pd = new TextView(getActivity());
                 pd.setText(dates.get(i));
+                pd.setTextSize(textSize);
                 pd.setPadding(20, 5, 40, 5);
                 row.addView(pd);
 
                 TextView counter2 = new TextView(getActivity());
                 counter2.setText((i+21) + "");
+                counter2.setTextSize(textSize);
                 counter2.setPadding(40, 5, 20, 5);
                 row.addView(counter2);
 
                 TextView pd2 = new TextView(getActivity());
                 pd2.setText(dates.get(i+20));
+                pd2.setTextSize(textSize);
                 pd2.setPadding(20, 5, 40, 5);
                 row.addView(pd2);
 
                 TextView counter3 = new TextView(getActivity());
                 counter3.setText((i+41) + "");
+                counter3.setTextSize(textSize);
                 counter3.setPadding(40, 5, 20, 5);
                 row.addView(counter3);
 
                 TextView pd3 = new TextView(getActivity());
                 pd3.setText(dates.get(i+40));
+                pd3.setTextSize(textSize);
                 pd3.setPadding(20, 5, 40, 5);
                 row.addView(pd3);
 
