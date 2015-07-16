@@ -25,6 +25,7 @@ public class MainActivity extends Activity {
 
     public static final int NUM_COLUMNS = 3;
     public static final int NUM_DATES = 180;
+    public static final int NUM_SECTIONS = 3;
 
     public static final int TITLE_SIZE = 17;
     public static final int DATE_SIZE = 16;
@@ -133,27 +134,46 @@ public class MainActivity extends Activity {
             }
 
             // print dates into table
-            int DATES_PER_COLUMN = NUM_DATES/NUM_COLUMNS;
+            int NUM_ROWS = NUM_DATES/NUM_COLUMNS;
+            int NUM_ROWS_PER_SECTION = NUM_ROWS/NUM_SECTIONS;
+            int NUM_DATES_PER_SECTION = NUM_DATES/NUM_SECTIONS;
 
-            for (int i = 0; i < DATES_PER_COLUMN; i++) {
+            for (int i = 0; i < NUM_SECTIONS; i++) {
 
-                TableRow row = new TableRow(getActivity());
+                for (int j = 0; j < NUM_ROWS_PER_SECTION; j++) {
 
-                for (int j = 0; j < NUM_COLUMNS; j++) {
-                    TextView counter = new TextView(getActivity());
-                    counter.setText((i+1 + j*DATES_PER_COLUMN) + "");
-                    counter.setTextSize(DATE_SIZE);
-                    counter.setPadding(20, 5, 20, 5);
-                    row.addView(counter);
+                    TableRow row = new TableRow(getActivity());
 
-                    TextView pd = new TextView(getActivity());
-                    pd.setText(dates.get(i + j * DATES_PER_COLUMN));
-                    pd.setTextSize(DATE_SIZE);
-                    pd.setPadding(20, 5, 40, 5);
-                    row.addView(pd);
+                    for (int k = 0; k < NUM_COLUMNS; k++) {
+                        TextView counter = new TextView(getActivity());
+                        counter.setText((i*NUM_DATES_PER_SECTION+1 + j + k*NUM_ROWS_PER_SECTION) + "");
+                        counter.setTextSize(DATE_SIZE);
+                        counter.setPadding(20, 5, 20, 5);
+                        row.addView(counter);
+
+                        TextView pd = new TextView(getActivity());
+                        pd.setText(dates.get(i*NUM_DATES_PER_SECTION + j + k*NUM_ROWS_PER_SECTION));
+                        pd.setTextSize(DATE_SIZE);
+                        pd.setPadding(20, 5, 40, 5);
+                        row.addView(pd);
+                    }
+
+                    mDateTable.addView(row);
+
                 }
 
-                mDateTable.addView(row);
+                TextView blankLine = new TextView(getActivity());
+                blankLine.setText("");
+                mDateTable.addView(blankLine);
+
+//
+//                mDateTable.addView(row);
+//
+//                if ((i+1) % (NUM_DATES/NUM_SECTIONS/NUM_COLUMNS) == 0) {
+//                    TextView blankLine = new TextView(getActivity());
+//                    blankLine.setText("");
+//                    mDateTable.addView(blankLine);
+//                }
 
             }
 
