@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
     public static TextView dateView;
 
     public static final int NUM_COLUMNS = 3;
-    public static final int NUM_DATES = 60;
+    public static final int NUM_DATES = 180;
 
     public static final int TITLE_SIZE = 17;
     public static final int DATE_SIZE = 16;
