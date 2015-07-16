@@ -138,11 +138,10 @@ public class MainActivity extends Activity {
             for (int i = 0; i < DATES_PER_COLUMN; i++) {
 
                 TableRow row = new TableRow(getActivity());
-                //row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT));
 
                 for (int j = 0; j < NUM_COLUMNS; j++) {
                     TextView counter = new TextView(getActivity());
-                    counter.setText((i+1+j*DATES_PER_COLUMN) + "");
+                    counter.setText((i+1 + j*DATES_PER_COLUMN) + "");
                     counter.setTextSize(DATE_SIZE);
                     counter.setPadding(20, 5, 20, 5);
                     row.addView(counter);
@@ -154,46 +153,7 @@ public class MainActivity extends Activity {
                     row.addView(pd);
                 }
 
-
-
-//                TextView counter = new TextView(getActivity());
-//                counter.setText((i+1) + "");
-//                counter.setTextSize(DATE_SIZE);
-//                counter.setPadding(20, 5, 20, 5);
-//                row.addView(counter);
-//
-//                TextView pd = new TextView(getActivity());
-//                pd.setText(dates.get(i));
-//                pd.setTextSize(DATE_SIZE);
-//                pd.setPadding(20, 5, 40, 5);
-//                row.addView(pd);
-//
-//                TextView counter2 = new TextView(getActivity());
-//                counter2.setText((i+21) + "");
-//                counter2.setTextSize(DATE_SIZE);
-//                counter2.setPadding(40, 5, 20, 5);
-//                row.addView(counter2);
-//
-//                TextView pd2 = new TextView(getActivity());
-//                pd2.setText(dates.get(i+20));
-//                pd2.setTextSize(DATE_SIZE);
-//                pd2.setPadding(20, 5, 40, 5);
-//                row.addView(pd2);
-//
-//                TextView counter3 = new TextView(getActivity());
-//                counter3.setText((i+41) + "");
-//                counter3.setTextSize(DATE_SIZE);
-//                counter3.setPadding(40, 5, 20, 5);
-//                row.addView(counter3);
-//
-//                TextView pd3 = new TextView(getActivity());
-//                pd3.setText(dates.get(i+40));
-//                pd3.setTextSize(DATE_SIZE);
-//                pd3.setPadding(20, 5, 40, 5);
-//                row.addView(pd3);
-
                 mDateTable.addView(row);
-
 
             }
 
