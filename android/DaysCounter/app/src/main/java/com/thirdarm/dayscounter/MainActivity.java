@@ -2,6 +2,7 @@ package com.thirdarm.dayscounter;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,7 +62,8 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
