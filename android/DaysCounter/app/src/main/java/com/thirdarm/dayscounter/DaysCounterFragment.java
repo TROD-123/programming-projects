@@ -47,18 +47,32 @@ public class DaysCounterFragment extends Fragment {
         return rootView;
     }
 
+
+    // redraw table upon resuming activity
     @Override
     public void onResume() {
         super.onResume();
 
-        if (mDateTable != null) reset();
-
-        getData(); generate();
+        initialize();
 
     }
 
+    // clear table when activity is stopped
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        reset();
+    }
+
+    // initialize table elements
+    private void initialize() {
+        getData();
+        generate();
+    }
+
     // get data from preferences file
-    public void getData() {
+    private void getData() {
 
         // Returns the SharedPreferences object containing all key-value pairs associated with
         //  SettingsUIFragment, which extends the PreferenceActivityFragment
@@ -70,7 +84,7 @@ public class DaysCounterFragment extends Fragment {
     }
 
     // generate table
-    public void generate() {
+    private void generate() {
 
         mDateTable = (TableLayout) rootView.findViewById(R.id.prospectiveCounter);
 
@@ -147,7 +161,10 @@ public class DaysCounterFragment extends Fragment {
 
     // clear tables
     private void reset() {
-        mDateTable.removeAllViews();
-        dates.clear();
+
+        if (mDateTable != null) {
+            mDateTable.removeAllViews();
+            dates.clear();
+        }
     }
 }
