@@ -32,10 +32,7 @@ public class MainActivity extends Activity {
         // basic initialization
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // get and set date
         dateView = (TextView) findViewById(R.id.todaysDate);
-        setDate();
 
         // add fragment
         if (savedInstanceState == null) {
@@ -67,6 +64,15 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // set the date. by including setDate() under onResume(), if date is changed while
+    //  activity is still running, the new date will be displayed.
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        setDate();
     }
 
     private void setDate() {
