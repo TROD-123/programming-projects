@@ -2,5 +2,7 @@
 <resources>
 
     <integer name="num_dates_default">60</integer>
+    <integer name="num_columns_default">3</integer>
+    <integer name="num_sections_default">1</integer>
 
 </resources>

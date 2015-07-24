@@ -8,9 +8,25 @@
         android:entries="@array/num_dates"
         android:entryValues="@array/num_dates_values" />
 
+    <ListPreference
+        android:key="num_columns"
+        android:title="Columns shown"
+        android:defaultValue="@integer/num_columns_default"
+        android:entries="@array/num_columns"
+        android:entryValues="@array/num_columns_values" />
+
+    <ListPreference
+        android:key="num_secitons"
+        android:title="Sections shown"
+        android:defaultValue="@integer/num_sections_default"
+        android:entries="@array/num_sections"
+        android:entryValues="@array/num_sections_values" />
+
+    <!--
     <com.thirdarm.dayscounter.NumberPickerPreference
         android:key="num_columns"
         android:title="Columns"
         android:defaultValue="3" />
+        -->
 
 </PreferenceScreen>

@@ -21,9 +21,9 @@ import java.util.Calendar;
 public class DaysCounterFragment extends Fragment {
 
 
-    public static final int NUM_COLUMNS = 3;
+    public static int NUM_COLUMNS;
     public static int NUM_DATES;
-    public static final int NUM_SECTIONS = 3;
+    public static int NUM_SECTIONS;
 
     public static final int TITLE_SIZE = 17;
     public static final int DATE_SIZE = 16;
@@ -80,6 +80,8 @@ public class DaysCounterFragment extends Fragment {
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(mContext);
 
         NUM_DATES = Integer.parseInt(SP.getString("num_dates", "60"));
+        NUM_COLUMNS = Integer.parseInt(SP.getString("num_columns", "3"));
+        NUM_SECTIONS = Integer.parseInt(SP.getString("num_sections", "1"));
 
     }
 
