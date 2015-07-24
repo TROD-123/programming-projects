@@ -16,14 +16,20 @@
         android:textSize="24dp" />
 
     <ScrollView
-        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/todaysDate"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:layout_above="@+id/textView" />
+        android:layout_above="@+id/textView" >
+
+        <HorizontalScrollView
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
 
     <TextView
         android:layout_width="wrap_content"
