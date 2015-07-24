@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory
+        android:title="Days Counter Basic Settings">
+
     <ListPreference
         android:key="num_dates"
         android:title="Dates shown"
@@ -16,7 +19,7 @@
         android:entryValues="@array/num_columns_values" />
 
     <ListPreference
-        android:key="num_secitons"
+        android:key="num_sections"
         android:title="Sections shown"
         android:defaultValue="@integer/num_sections_default"
         android:entries="@array/num_sections"
@@ -28,5 +31,7 @@
         android:title="Columns"
         android:defaultValue="3" />
         -->
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
