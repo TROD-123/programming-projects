@@ -6,24 +6,27 @@
 
     <ListPreference
         android:key="num_dates"
-        android:title="Dates shown"
+        android:title="@string/num_dates"
         android:defaultValue="@integer/num_dates_default"
         android:entries="@array/num_dates"
-        android:entryValues="@array/num_dates_values" />
+        android:entryValues="@array/num_dates_values"
+        android:icon="@null" />
 
     <ListPreference
         android:key="num_columns"
-        android:title="Columns shown"
+        android:title="@string/num_columns"
         android:defaultValue="@integer/num_columns_default"
         android:entries="@array/num_columns"
-        android:entryValues="@array/num_columns_values" />
+        android:entryValues="@array/num_columns_values"
+        android:icon="@null" />
 
     <ListPreference
         android:key="num_sections"
-        android:title="Sections shown"
+        android:title="@string/num_sections"
         android:defaultValue="@integer/num_sections_default"
         android:entries="@array/num_sections"
-        android:entryValues="@array/num_sections_values" />
+        android:entryValues="@array/num_sections_values"
+        android:icon="@null" />
 
     <!--
     <com.thirdarm.dayscounter.NumberPickerPreference
