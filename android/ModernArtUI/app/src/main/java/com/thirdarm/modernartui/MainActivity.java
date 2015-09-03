@@ -30,7 +30,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +73,9 @@ public class MainActivity extends Activity {
     // one DialogFragment instance for all Dialogs
     private DialogFragment mDialog;
 
+    // SeekBar characteristics
     private SeekBar mSeekBar;
+    private static final int mDelay = 10;
 
     // ArrayList to store rectangles (custom wrapper class) and each of their properties:
     //  -TextView
@@ -97,6 +101,9 @@ public class MainActivity extends Activity {
         // custom functions for getting ui elements
         initializeUI();
         setRectangleProperties();
+
+        // change colors automatically
+        autoSeek();
 
         // listener for SeekBar
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -133,21 +140,32 @@ public class MainActivity extends Activity {
         });
     }
 
-    // TODO: Set up an autoSeek function that allows colors to fluctuate automatically
-    //  and so that start and end colors change after every rotation
-    // the thing about this is that it needs to constantly be called so that
-    //  the seek changes can continuously be done
-    // this might need to run continuously in the background, but this does not
-    //  need to continue running even after the activity is destroyed
-    // haven't learned any of automation procedures yet
-    // a service may not be needed, but something else instead
+    // AutoSeek function that allows colors to fluctuate automatically and endlessly
     private void autoSeek() {
+        new Thread(new Runnable() {
+            boolean direction;
 
-        // get value of seekBar to assess whether to increment or decrement
-        int value = mSeekBar.getProgress();
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(mDelay);
+                    } catch (InterruptedException e) {
 
-        // get values of clock
-
+                    }
+                    if (mSeekBar.getProgress() == mSeekBar.getMax()) {
+                        direction = true;
+                    } else if (mSeekBar.getProgress() == 0) {
+                        direction = false;
+                    }
+                    if (direction) {
+                        mSeekBar.setProgress(mSeekBar.getProgress() - 1);
+                    } else {
+                        mSeekBar.setProgress(mSeekBar.getProgress() + 1);
+                    }
+                }
+            }
+        }).start();
     }
 
     // TODO: Preserve layout when switching orientations
