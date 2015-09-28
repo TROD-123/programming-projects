@@ -1,0 +1,57 @@
+UNDERSTANDING CONTENT PROVIDERS
+
+Content Resolver's job is to link your app to the appropriate Content Provider your app is going to use.
+There are many Content Providers and other apps native to Android, and the Content Resolver allows apps to link with the right Content Provider when needed. Note that apps can be linked to multiple Content Providers.
+
+To get a reference to the ContentResolver, use:
+ContentResolver resolver = getContentResolver();
+This allows the app access to the correct Content Provider
+
+4 things you can do with data:
+1) Create (add) - insert()
+2) Retrieve (read) - query()
+3) Update (change) - update()
+4) Delete (delete) - delete()
+These are 4 actions that you can do when accessing the Content Provider
+
+These methods can be called upon the ContentResolver object, which would actually call the corresponding method on the ContentProvider For example:
+Cursor cursor = resolver.query(...)  actually calls the query method of the appropriate ContentProvider
+
+NOW, how does the ContentResolver know which ContentProvider on which .query() would be called? Look at the uri. For example:
+content://user_dictionary/words
+-content:// is the SCHEME, the standard way content uris start.
+-user_dictionary is the CONTENT AUTHORITY, which tells the ContentResolver which ContentProvider to use
+-words is the table to access, i.e. which data to use
+
+WHAT is a cursor? A cursor contains a table of data which can iterate through the table's individual rows (i.e. it is an iterator). This table can theoretically contain thousands of rows. How the table is constructed and the data organized is through the arguments passed through .query(). The first argument specifies the table in the ContentProvider to access. The next 3 arguments specify which rows and columns to be displyed. The last argument specifies how the rows would be sorted. By passing in null for all these arguments means you want every columna and row to be displayed in the table, ordered by ascending _id values.
+
+Useful cursor methods:
+-.getCount() returns the number of rows in the table
+-.moveToNext() moves the cursor to the next row in the table. This returns a boolean value: true if the cursor landed on a row, and false if the cursor lands after the last row
+-A good way to continuously move the cursor through rows is to use a while loop:
+	while(cursor.moveToNext()) {
+	// DO SOMETHING
+	}
+-.getColumnIndex(String columnName) gets the int value associated with the name of that column, denoting where the column is on the table
+-.getX(int columnIndex) gets the specific value in the current row and specified column of the table, where X stands for the type of the data that is stored in that column (e.g. X can be string, double, int, long, etc.)
+-.close() to close the cursor to prevent data leaks. Preventing to do so may crash your app. You can try to use a try block and wrap the .close() in a finally block:
+	try {
+		// CURSOR CODE
+	} finally {
+		cursor.close();
+	}
+
+You can VERY EASILY populate a ListView with data elements of your cursor, using the SimpleCursorAdapter class, which is a subclass of the CursorAdapter class. Follow the steps below:
+1) Basic references: 
+-to ListView that will hold and display the data
+-to Cursor, from querying your ContentProvider
+2) Create a SimpleCursorAdapter with the following arguments (in this order):
+-the context of the activity
+-the layout of each ListView item (a good 2-line default is to use android.R.layout.two_line_list_item)
+-the cursor reference
+-an array of Strings containing the column names of the data you want to display in the ListView (ideally this would be obtained from the list of constants in the Contract class)
+-an array of ints containing the references to each Text View in each ListView item (if using the 2-line default, they are android.R.id.text1 and android.R.id.text2, respectively)
+-an optional settings flag (default to 0)
+3) Attach the adapter to the ListView
+
+The order in which items are put into the ListView item layout is the same, corresponding order which the elements in each of the String and int arrays are specified. That is, the first String listed in the string array would be placed in the first Text View listed in the int array.
