@@ -29,14 +29,46 @@ public class MainActivity extends ActionBarActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
+    // To store our current known location
+    private String mLocation;
+
+    // Constant for a fragment tag. A constant string we can use to tag a fragment within the
+    //  fragment manager so we can easily look it up later.
+    // When we add the fragment, we can provide an argument for the String tag. Fragments can
+    //  only be tagged during the fragment transaction. This allows the same fragment code to be
+    //  reused multiple times with different tags.
+    private static final String FORECASTFRAGMENT_TAG = "ForecastFragment";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Load the ForecastFragment and tag the fragment so we can refer to the fragment later on
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
+                    .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
+        }
+
+        // Get the current location from the SharedPreferences
+        mLocation = Utility.getPreferredLocation(this);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+
+        // Check to see if mLocation stored here is different from the location stored in
+        //  SharedPreferences. If it is different, notify the ForecastFragment (using the tag)
+        //  that the location has changed, allowing it to update the weather data in the ListView
+        //  with the data for the new location, and then update mLocation stored here with the
+        //  new/current location.
+        if (mLocation != Utility.getPreferredLocation(this)) {
+            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager()
+                    .findFragmentByTag(FORECASTFRAGMENT_TAG);
+            ff.onLocationChanged();
+            mLocation = Utility.getPreferredLocation(this);
         }
     }
 
