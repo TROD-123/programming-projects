@@ -1,0 +1,149 @@
+﻿{
+  "title": "Test Questionnaire",
+  "desc": "A test json object for a questionnaire configuration file",
+  "client": "Apples and Oranges",
+  "team": [ "Me", "Myself", "I" ],
+  "owningOffice": "LA",
+  "country": "US",
+  "dateCreated": null,
+  "dateLastModified": null,
+  "sSets": [],
+  "qSets": [],
+  "rSets": [],
+  "modules": [
+    {
+      "mNum": 1,
+      "mTitle": "The first module",
+      "mDesc": "Description of the first module",
+      "mShowDesc": true,
+      "sections": [
+        {
+          "sLetter": "A",
+          "sTitle": "The first section",
+          "questionBlocks": [
+            {
+              "qNum": "Q1",
+              "qTitle": "Gender",
+              "baseLabel": "All respondents",
+              "baseDef": null,
+              "comments": "This question is asked to both genders.",
+              "progInst": "Test programming instructions.",
+              "progFlagsNonADC": [],
+              "progFlagsADC": null,
+              "routInst": "Next question",
+              "rFlag": null,
+              "qType": "Single response",
+              "qTypeInt": null,
+              "qText": "What is your gender?",
+              "respInst": "Please select one answer below.",
+              "responses": [
+                {
+                  "code": 1,
+                  "rText": "Male",
+                  "rFlags": [ "Generic" ],
+                  "rId": 1,
+                  "dateCreated": null,
+                  "dateLastModified": null
+                },
+                {
+                  "code": 2,
+                  "rText": "Female",
+                  "rFlags": [ "Generic" ],
+                  "rId": 2,
+                  "dateCreated": null,
+                  "dateLastModified": null
+                },
+                {
+                  "code": 98,
+                  "rText": "Prefer not to answer",
+                  "rFlags": [ "PreferNo" ],
+                  "rId": 2,
+                  "dateCreated": null,
+                  "dateLastModified": null
+                }
+              ],
+              "startRow": 3,
+              "endRow": null,
+              "qId": 1,
+              "dateCreated": null,
+              "dateLastModified": null
+            },
+            {
+              "qNum": "Q2",
+              "qTitle": "Age",
+              "baseLabel": "Males only",
+              "baseDef": "Q1 = 1 ['Males']",
+              "comments": "This question is only asked to males.",
+              "progInst": "Test ADC programming instructions.",
+              "progFlagsNonADC": null,
+              "progFlagsADC": [],
+              "routInst": "Next question",
+              "rFlag": null,
+              "qType": "Single response",
+              "qTypeInt": null,
+              "qText": "What is your gender?",
+              "respInst": "Please select one answer below.",
+              "responses": null,
+              "startRow": 30,
+              "endRow": null,
+              "qId": 2,
+              "dateCreated": null,
+              "dateLastModified": null
+            }
+          ],
+          "startRow": 1,
+          "endRow": null,
+          "sId": 1,
+          "dateCreated": null,
+          "dateLastModified": null
+        },
+        {
+          "sLetter": "B",
+          "sTitle": null,
+          "questionBlocks": [],
+          "startRow": 500,
+          "endRow": null,
+          "sId": 2,
+          "dateCreated": null,
+          "dateLastModified": null
+        }
+      ],
+      "sheetNum": 1,
+      "mId": 1,
+      "dateCreated": null,
+      "dateLastModified": null
+    },
+    {
+      "mNum": null,
+      "mTitle": "The second module",
+      "mDesc": "Description of the second module",
+      "mShowDesc": false,
+      "sections": [
+        {
+          "sLetter": "C",
+          "sTitle": "The third section in the second sheet",
+          "questionBlocks": [],
+          "startRow": 1,
+          "endRow": null,
+          "sId": 3,
+          "dateCreated": null,
+          "dateLastModified": null
+        },
+        {
+          "sLetter": null,
+          "sTitle": "IT'S THE FINAL COUNTDOWN!",
+          "questionBlocks": [],
+          "startRow": 250,
+          "endRow": null,
+          "sId": 4,
+          "dateCreated": null,
+          "dateLastModified": null
+        }
+      ],
+      "sheetNum": 2,
+      "mId": 2,
+      "dateCreated": null,
+      "dateLastModified": null
+    }
+  ]
+}
