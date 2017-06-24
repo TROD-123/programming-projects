@@ -71,6 +71,11 @@ namespace QuestionnaireSpecGenerator
         internal const int defaultFirstColumn = 1;
         internal const int rowCountOffset = -1;
         internal const int defaultColumnOffset = 1;
+
+        // initial row counter values
+        internal const int bufferHeight = 1;
+        internal const int questionBlockInitHeight = 8 + bufferHeight;
+        internal const int sectionInitHeight = 1 + bufferHeight;
     }
 
     // Respondent instruction strings based on

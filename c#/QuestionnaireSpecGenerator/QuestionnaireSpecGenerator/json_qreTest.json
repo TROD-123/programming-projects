@@ -65,6 +65,8 @@
               "startRow": 3,
               "endRow": null,
               "qId": 1,
+              "qPosition": 0,
+              "rowCounter": 12,
               "dateCreated": null,
               "dateLastModified": null
             },
@@ -87,6 +89,8 @@
               "startRow": 30,
               "endRow": null,
               "qId": 2,
+              "qPosition": 1,
+              "rowCounter": 9,
               "dateCreated": null,
               "dateLastModified": null
             }
@@ -94,6 +98,8 @@
           "startRow": 1,
           "endRow": null,
           "sId": 1,
+          "sPosition": 0,
+          "rowCounter": 10,
           "dateCreated": null,
           "dateLastModified": null
         },
@@ -104,6 +110,8 @@
           "startRow": 500,
           "endRow": null,
           "sId": 2,
+          "sPosition": 1,
+          "rowCounter": 20,
           "dateCreated": null,
           "dateLastModified": null
         }

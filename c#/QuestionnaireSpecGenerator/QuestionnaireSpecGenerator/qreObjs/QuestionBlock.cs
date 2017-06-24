@@ -135,6 +135,21 @@ namespace QuestionnaireSpecGenerator
         #region locative properties
 
         /// <summary>
+        /// The question position. Determines the order in which questions are shown in the section, from
+        ///  top to bottom.
+        /// <para>Requirements:</para>
+        /// <list type="number">
+        ///     <item>
+        ///         <description>Must not be <c>null</c>.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Must be a unique <c>int</c> per question within the same section.</description>
+        ///     </item>
+        /// </list>
+        /// </summary>
+        public int qPosition { get; set; } // TODO: Need to add to JSON
+
+        /// <summary>
         /// The excel row of where the <see cref="QuestionBlock"/> begins. This is a <b>user-defined</b> value, representing 
         ///  the row number containing the question number and title. This determines where in the sheet the 
         ///  <see cref="QuestionBlock"/> gets drawn.
@@ -150,6 +165,7 @@ namespace QuestionnaireSpecGenerator
         /// </summary>
         public int StartRow { get; set; }
 
+        // TODO: POTENTIALLY DEPRECATE
         /// <summary>
         /// The excel row of where the <see cref="QuestionBlock"/> ends. In the usual case, this is an <b>auto-defined</b> 
         ///     value, representing the last row of the <see cref="QuestionBlock"/>. This is purely a reference value, 
@@ -165,6 +181,14 @@ namespace QuestionnaireSpecGenerator
         /// </list>
         /// </summary>
         public int EndRow { get; set; }
+
+        /// <summary>
+        /// Keeps track of the number of rows the question block uses. Includes an extra row for bottom padding.
+        /// <para>
+        /// <b>Note: </b>Unless initializing, do NOT directly modify this counter.
+        /// </para>
+        /// </summary>
+        private int rowCounter { get; set; } // TODO: Need to add to JSON
 
         #endregion
 
@@ -203,18 +227,103 @@ namespace QuestionnaireSpecGenerator
 
         #region methods
 
-        public void AddResponse(Response response)
+        /// <summary>
+        /// Prevents a default instance of the <see cref="QuestionBlock"/> class from being created. Used for deserialization
+        /// by <see cref="JsonHandler"/>.
+        /// </summary>
+        private QuestionBlock()
         {
-            // Whatever the response id is currently set to, set the id to the current question block id
-            response.PId = QId;
-            Responses.Add(response);
+            // NOTE: Beware to NOT call UpdateDate() when merely DESERIALIZING.
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestionBlock"/> class and adds it to the <see cref="DataContainer"/>.
+        /// </summary>
+        /// <param name="container">The main data container (<b>required</b>).</param>
+        /// <param name="pId">The parent identifier (<b>required</b>).</param>
+        /// <param name="qNum">The question number.</param>
+        /// <param name="qTitle">The question title.</param>
+        /// <param name="baseLabel">The base label.</param>
+        /// <param name="baseDef">The base definition.</param>
+        /// <param name="comments">The comments.</param>
+        /// <param name="progFlagsNonADC">The list of Non-ADC programming flags. Used to set the <see cref="ProgInst"/> string.</param>
+        /// <param name="progFlagsADC">The list of ADC programming flags. Used to set the <see cref="ProgInst"/> string.</param>
+        /// <param name="rFlag">The routing flag. Used to set the <see cref="RoutInst"/> string.</param>
+        /// <param name="qTypeInt">The question type. Used to set the <see cref="QType"/> string.</param>
+        /// <param name="qText">The question text.</param>
+        /// <param name="respInst">The respondent instruction.</param>
+        /// <param name="responses">The list of responses.</param>
+        public QuestionBlock(DataContainer container, int pId, string qNum = "QNUM", string qTitle = "Question title",
+            string baseLabel = "Base label", string baseDef = "Base definition", string comments = "Comments",
+            List<ProgFlagsNonADC> progFlagsNonADC = null, List<ProgFlagsADC> progFlagsADC = null, 
+            RoutingFlags rFlag = RoutingFlags.NextQuestion, QuestionType qTypeInt = QuestionType.SingleCode,
+            string qText = "Question text", string respInst = "Respondent instruction", List<Response> responses = null)
+        {
+            DateCreated = DateTime.Now;
+
+            PId = pId;
+            QNum = qNum;
+            QTitle = qTitle;
+            BaseLabel = baseLabel;
+            BaseDef = baseDef;
+            Comments = comments;
+            ProgFlagsNonADC = progFlagsNonADC;
+            ProgFlagsADC = progFlagsADC;
+            RFlag = rFlag;
+            QTypeInt = qTypeInt;
+            QText = qText;
+            RespInst = respInst;
+
+            rowCounter = Constants.questionBlockInitHeight;
+
+            // TODO: Need to set startRow. This can be done via the section
+
+
+            QId = Toolbox.GenerateRandomId(container, QreObjTypes.QuestionBlock);
+
+            // Add the responses
+            if (responses != null)
+            {
+                foreach (Response response in responses)
+                {
+                    AddResponse(response);
+                }
+            }
+            container.AddQuestion(this);
+            UpdateDate();
+        }
+
+        /// <summary>
+        /// Adds the response to the list of responses for the <see cref="QuestionBlock"/>. Sets each
+        /// <see cref="Response.PId"/> to the current <see cref="QuestionBlock.QId"/>. Also
+        /// increments <see cref="rowCounter"/> by 1 as well as the <see cref="DateLastModified"/>.
+        /// <para>
+        /// Note, when creating the response to be added, no need to put down a Parent ID, since that is
+        /// done here!
+        /// </para>
+        /// </summary>
+        /// <param name="response">The response to add.</param>
+        public void AddResponse(Response response)
+        {
+            response.PId = QId;
+            Responses.Add(response);
+            rowCounter++;
+            UpdateDate();
+        }
+
+        /// <summary>
+        /// Removes the response from the list of responses for the <see cref="QuestionBlock"/>. Also
+        /// decrements <see cref="rowCounter"/> by 1.
+        /// </summary>
+        /// <param name="response">The response to remove.</param>
+        /// <exception cref="ArgumentOutOfRangeException">response - The passed response does not exist in this question.</exception>
         public void RemoveResponse(Response response)
         {
             if (Responses.Contains(response))
             {
                 Responses.Remove(response);
+                rowCounter--;
+                UpdateDate();
             }
             else
             {
@@ -222,22 +331,42 @@ namespace QuestionnaireSpecGenerator
             }
         }
 
+        // TODO: Still need to implement
         public void ChangeParent(int newPId)
         {
             // Need to get the current section and the target sections, and modify the question lists from there
             int oldPId = PId;
 
-            Section oldParent = DataContainer.GetSectionById(oldPId);
-            Section newParent = DataContainer.GetSectionById(newPId);
+            //Section oldParent = DataContainer.GetSectionById(oldPId);
+            //Section newParent = DataContainer.GetSectionById(newPId);
 
-            oldParent.RemoveQuestion(this);
+            //oldParent.RemoveQuestion(this);
     
             // will also need to reflect the changed parent id here
             PId = newPId;
-            newParent.AddQuestion(this);
+            //newParent.AddQuestion(this);
         }
 
-        // NOTE: Since the DataContainer class houses all qre objects, we should give this class the cross-object functionality
+
+        public int GetNumRows()
+        {
+            return rowCounter;
+        }
+
+        public void UpdateStartRow(int startRow)
+        {
+            StartRow = startRow;
+        }
+
+        /// <summary>
+        /// Updates <see cref="DateLastModified"/>. Needs to be called in methods that update <see cref="QuestionBlock"/> elements.
+        /// </summary>
+        private void UpdateDate()
+        {
+            DateLastModified = DateTime.Now;
+        }
+
+        // TODO: NOTE: Since the DataContainer class houses all qre objects, we should give this class the cross-object functionality
         // e.g. changing parents, setting parents. So that we don't have to define redundant methods across each of the classes
 
 

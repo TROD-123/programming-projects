@@ -57,6 +57,17 @@ namespace QuestionnaireSpecGenerator
         public string STitle { get; set; }
 
         /// <summary>
+        /// The description that shows below the section name, if desired (see <see cref="SShowDesc"/>).
+        /// </summary>
+        public string SDesc { get; set; } // TODO: Add to JSON
+
+        /// <summary>
+        /// Determines whether to show the section description at the top of the section, beneath the section name.
+        /// </summary>
+        public bool SShowDesc { get; set; } // TODO: Add to JON
+
+
+        /// <summary>
         /// The question blocks in the section, stored as a list.
         /// </summary>
         public List<QuestionBlock> QuestionBlocks { get; set; }
@@ -64,6 +75,21 @@ namespace QuestionnaireSpecGenerator
         #endregion
 
         #region physical locative properties
+
+        /// <summary>
+        /// The section position. Determines the order in which sections are shown in the module, from
+        ///  top to bottom.
+        /// <para>Requirements:</para>
+        /// <list type="number">
+        ///     <item>
+        ///         <description>Must not be <c>null</c>.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Must be a unique <c>int</c> per section within the same module.</description>
+        ///     </item>
+        /// </list>
+        /// </summary>
+        public int sPosition { get; set; } // TODO: Need to add to JSON
 
         /// <summary>
         /// The excel row of where the section begins. This is a <b>user-defined</b> value, representing the row number 
@@ -78,8 +104,9 @@ namespace QuestionnaireSpecGenerator
         ///     </item>
         /// </list>
         /// </summary>
-        public int StartRow { get; set; }
+        private int StartRow { get; set; }
 
+        // TODO: POTENTIALLY DEPRECATE
         /// <summary>
         /// The excel row of where the <see cref="Section"/> ends. In the usual case, this is an <b>auto-defined</b> 
         ///     value, representing the row number 2 rows after the <c>endRow</c> of the last <see cref="QuestionBlock"/>
@@ -96,6 +123,15 @@ namespace QuestionnaireSpecGenerator
         /// </list>
         /// </summary>
         public int EndRow { get; set; }
+
+        /// <summary>
+        /// Keeps track of the number of rows the section uses. This is contingent on the size of each
+        /// <see cref="QuestionBlock"/> contained in the section. Also includes an extra row for bottom padding. 
+        /// <para>
+        /// <b>Note: </b>Unless initializing, do NOT directly modify this counter.
+        /// </para>
+        /// </summary>
+        private int rowCounter { get; set; } // TODO: Need to add to JSON
 
         #endregion
 
@@ -134,21 +170,146 @@ namespace QuestionnaireSpecGenerator
 
         #region methods
 
-        public void AddQuestion(QuestionBlock question)
+        /// <summary>
+        /// Prevents a default instance of the <see cref="Section"/> class from being created. Used for deserialization by
+        /// <see cref="JsonHandler"/>.
+        /// </summary>
+        private Section()
         {
-            QuestionBlocks.Add(question);
+
+
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Section"/> class and adds it to the <see cref="DataContainer"/>.
+        /// </summary>
+        /// <param name="container">The main data container (<b>required</b>).</param>
+        /// <param name="pId">The parent identifier (<b>required</b>).</param>
+        /// <param name="sLetter">The section letter.</param>
+        /// <param name="sTitle">The section title.</param>
+        /// <param name="questionBlocks">The question blocks contained in the section.</param>
+        public Section(DataContainer container, int pId, int position, string sLetter = "XYZ", string sTitle = "Section Name",
+            string sDesc = "The section description", bool sShowDesc = false, List<QuestionBlock> questionBlocks = null)
+        {
+            DateCreated = DateTime.Now;
+
+            PId = pId;
+            SLetter = sLetter;
+            STitle = sTitle;
+            SDesc = sDesc;
+            SShowDesc = sShowDesc;
+            sPosition = position;
+
+            rowCounter = Constants.sectionInitHeight;
+            if (sShowDesc) rowCounter++;
+
+            // TODO: Add method that determines the physical locative properties (in module class)
+            // Need to determine startRow here, based on the start position
+
+
+            SId = Toolbox.GenerateRandomId(container, QreObjTypes.Section);
+
+            // Add the question blocks (also determine start rows here)
+            if (questionBlocks != null)
+            {
+                foreach (QuestionBlock question in questionBlocks)
+                {
+                    AddQuestion(question);
+                }
+            }
+            container.AddSection(this);
+            UpdateDate();
+        }
+
+        /// <summary>
+        /// Adds the question to the list of questions for the <see cref="Section"/>. Sets each
+        /// <see cref="QuestionBlock.PId"/> to the current <see cref="Section.SId"/>. Also 
+        /// updates the <see cref="rowCounter"/> as well as <see cref="DateLastModified"/>.
+        /// <para>
+        /// Note, when creating the question to be added, no need to put down a Parent ID, since that is
+        /// done here!
+        /// </para>
+        /// </summary>
+        /// <param name="question">The question.</param>
+        public void AddQuestion(QuestionBlock question)
+        {
+            question.PId = SId;
+            // LEFT OFF TODO: Set start row here before adding (recently added s and q position variables for ordering.
+            // This can somehow depend on that ordering
+
+            // TODO: When updating the row counter, need to also update the start rows of all questions afterwards, AND need
+
+
+
+
+            QuestionBlocks.Add(question);
+            rowCounter += question.GetNumRows();
+            UpdateDate();
+        }
+
+        /// <summary>
+        /// Removes the question, and updates the <see cref="rowCounter"/> as well as <see cref="DateLastModified"/>.
+        /// </summary>
+        /// <param name="question">The question.</param>
+        /// <exception cref="ArgumentOutOfRangeException">question - The passed question does not exist in this section.</exception>
         public void RemoveQuestion(QuestionBlock question)
         {
             if (QuestionBlocks.Contains(question))
             {
                 QuestionBlocks.Remove(question);
+                rowCounter -= question.GetNumRows();
+                UpdateDate();
             }
             else
             {
                 throw new ArgumentOutOfRangeException("question", "The passed question does not exist in this section.");
             }
+        }
+
+        /// <summary>
+        /// Gets the position of the section, relative to other sections in the same module.
+        /// </summary>
+        /// <returns></returns>
+        public int GetPosition()
+        {
+            return sPosition;
+        }
+
+        /// <summary>
+        /// Sets the position of the section relative to other sections in the same module.
+        /// Positions must be zero-indexed, with 0 denoting the first position.
+        /// </summary>
+        /// <param name="position">The position to set.</param>
+        public void SetPosition(int position)
+        {
+            sPosition = position;
+            UpdateDate();
+        }
+
+        public int GetStartRow()
+        {
+            return StartRow;
+        }
+
+        public void SetStartRow(int startRow)
+        {
+            StartRow = startRow;
+            UpdateDate();
+        }
+
+        public int GetRowCounter()
+        {
+            return rowCounter;
+        }
+
+        /// <summary>
+        /// Updates <see cref="DateLastModified"/>. Needs to be called in methods that update <see cref="Section"/> elements.
+        /// </summary>
+        private void UpdateDate()
+        {
+            DateLastModified = DateTime.Now;
+
+            // TODO: Whenever this method is called, need to also compile a log of changes for the changelog. PRE and POST states
         }
 
         #endregion
