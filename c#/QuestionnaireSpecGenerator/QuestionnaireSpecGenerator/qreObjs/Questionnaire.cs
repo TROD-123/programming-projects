@@ -63,5 +63,26 @@ namespace QuestionnaireSpecGenerator
         // The start of the questionnaire object chain. The lower level objects in the questionnaire
         // spec can be accessed through here.
         public List<Module> Modules { get; set; }
+
+        #region methods
+
+        public void AddModule(Module module)
+        {
+            Modules.Add(module);
+        }
+
+        public void RemoveModule(Module module)
+        {
+            if (Modules.Contains(module))
+            {
+                Modules.Remove(module);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("module", "The passed module does not exist in this questionnaire.");
+            }
+        }
+
+        #endregion
     }
 }

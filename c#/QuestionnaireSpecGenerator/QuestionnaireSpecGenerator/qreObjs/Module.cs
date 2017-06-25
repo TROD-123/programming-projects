@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 namespace QuestionnaireSpecGenerator
 {
     /// <summary>
-    ///  This class represents a single sheet (module) in the questionnaire.
-    ///  This can be used for grouping sections with a unified purpose. Unlike <see cref="SectionSets"/> and <see cref="QuestionSets"/>,
-    ///   <see cref="Modules"/> have a <c>locative</c> property, determining how modules are organized in the questionnaire.
-    ///  <para>Modules are labeled with a <c>number</c> and a <c>title</c> (e.g. Module 1: Demographics), and may or
-    ///   may not reflect the actual title of section(s) contained in the module.</para>
+    /// This class represents a single sheet (module) in the questionnaire.
+    /// This can be used for grouping sections with a unified purpose. Unlike <see cref="SectionSets" /> and <see cref="QuestionSets" />,
+    /// <see cref="Modules" /> have a <c>locative</c> property, determining how modules are organized in the questionnaire.
+    /// <para>Modules are labeled with a <c>number</c> and a <c>title</c> (e.g. Module 1: Demographics), and may or
+    /// may not reflect the actual title of section(s) contained in the module.</para>
     /// </summary>
-    public class Module
+    /// <seealso cref="QuestionnaireSpecGenerator.QuestionnaireObject{QuestionnaireSpecGenerator.Section}" />
+    public class Module : QuestionnaireObject<Section>
     {
         #region outward expressions
 
@@ -39,63 +40,10 @@ namespace QuestionnaireSpecGenerator
         /// </summary>
         public bool MShowDesc { get; set; }
 
-        /// <summary>
-        /// The sections in the module, stored as a list.
-        /// </summary>
-        public List<Section> Sections { get; set; }
-
-        #endregion
-
-        #region locative properties  
-
-        /// <summary>
-        /// The sheet number. Determines the order in which sheets are shown in the questionnaire, from
-        ///  left to right.
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>Must not be <c>null</c>.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>Must be a unique <c>int</c> per module.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int SheetNum { get; set; }
-
-        // TODO: Tracker to keep track of startRow and endRow properties of sections (be wary of section deletes, 
-        // question updates, response adds, etc.
-
-        
-
-        #endregion
-
-
-        #region internal properties
-
-        /// <summary>
-        /// The module unique identifier.
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>Must not be <c>null</c>.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>Must be a unique <c>int</c> per module.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int MId { get; set; }
-
-        /// <summary>
-        /// The module creation date and time
-        /// </summary>
-        public DateTime DateCreated { get; set; }
-
-        /// <summary>
-        /// The last time module was modified
-        /// </summary>
-        public DateTime DateLastModified { get; set; }
+        ///// <summary>
+        ///// The sections in the module, stored as a list.
+        ///// </summary>
+        //public List<Section> Sections { get; set; }
 
         #endregion
 
@@ -129,16 +77,16 @@ namespace QuestionnaireSpecGenerator
             MDesc = mDesc;
             MShowDesc = mShowDesc;
 
-            SheetNum = container.GetNextSheetNum();
+            //Position = container.GetNextSheetNum();
 
-            MId = Toolbox.GenerateRandomId(container, QreObjTypes.Module);
+            SelfId = Toolbox.GenerateRandomId(container, QreObjTypes.Module);
 
             // Add the sections (also determine start rows here)
             if (sections != null)
             {
                 foreach (Section section in sections)
                 {
-                    AddSection(section);
+                    AddChild(section);
                 }
             }
 
@@ -148,114 +96,109 @@ namespace QuestionnaireSpecGenerator
 
         // TODO: Add methods
 
-        /// <summary>
-        /// Adds the section to the list of sections for the <see cref="Module"/>. Sets each
-        /// <see cref="Section.SId"/> to the current <see cref="Module.MId"/>. Also updates the
-        /// <see cref="DateLastModified"/>.
-        /// <para>
-        /// Note, when creating the section to be added, no need to put down a Parent ID, since that is
-        /// done here!
-        /// </para>
-        /// </summary>
-        /// <param name="section">The section.</param>
-        public void AddSection(Section section)
-        {
-            // Set the section PID
-            section.SId = MId;
+        #endregion
 
-            // Get the section position
-            int posNewSection = section.GetPosition();
+        #region deprecated
 
-            // First, increment positions at and above the position of the section
-            // to be added, one at a time starting from the end and going
-            // down until current section
-            for (int i = Sections.Count - 1; i >= posNewSection; i--)
-            {
-                Section sectionToMove = GetSectionByPosition(i);
-                sectionToMove.SetPosition(sectionToMove.GetPosition() + 1);
-            }
+        ///// <summary>
+        ///// Adds the section to the list of sections for the <see cref="Module"/>. Sets each
+        ///// <see cref="Section.SId"/> to the current <see cref="Module.SelfId"/>. Also updates the
+        ///// <see cref="DateLastModified"/>.
+        ///// <para>
+        ///// Note, when creating the section to be added, no need to put down a Parent ID, since that is
+        ///// done here!
+        ///// </para>
+        ///// </summary>
+        ///// <param name="section">The section.</param>
+        //public void AddSection(Section section)
+        //{
+        //    // Set the section PID
+        //    section.ParentId = SelfId;
 
-            // Add the new section to the list
-            Sections.Add(section);
+        //    //// Get the section position
+        //    //int posNewSection = section.GetPosition();
 
-            // Now set the startRows for each section, starting at the current
-            // position and moving upward
-            SetStartRowsByPosition(posNewSection);
+        //    //// First, increment positions at and above the position of the section
+        //    //// to be added, one at a time starting from the end and going
+        //    //// down until current section
+        //    //for (int i = Sections.Count - 1; i >= posNewSection; i--)
+        //    //{
+        //    //    Section sectionToMove = GetSectionByPosition(i);
+        //    //    sectionToMove.SetPosition(sectionToMove.GetPosition() + 1);
+        //    //}
 
-            UpdateDate();
-        }
+        //    // Add the new section to the list
+        //    Sections.Add(section);
 
-        public void RemoveSection(Section section)
-        {
-            if (Sections.Contains(section))
-            {
-                int posOldSection = section.GetPosition();
+        //    //// Now set the startRows for each section, starting at the current
+        //    //// position and moving upward
+        //    //SetStartRowsByPosition(posNewSection);
 
-                // Decrement positions above the position of the section
-                // to be removed, one at a time starting from the above the
-                // removed section and going up until end
-                for (int i = posOldSection + 1; i <= Sections.Count - 1; i++)
-                {
-                    Section sectionToMove = GetSectionByPosition(i);
-                    sectionToMove.SetPosition(sectionToMove.GetPosition() - 1);
-                }
+        //    UpdateDate();
+        //}
 
-                // Remove the section
-                Sections.Remove(section);
+        //public void RemoveSection(Section section)
+        //{
+        //    if (Sections.Contains(section))
+        //    {
+        //        int posOldSection = section.GetPosition();
 
-                // Update the startRows for each section
-                SetStartRowsByPosition(posOldSection);
+        //        // Decrement positions above the position of the section
+        //        // to be removed, one at a time starting from the above the
+        //        // removed section and going up until end
+        //        for (int i = posOldSection + 1; i <= Sections.Count - 1; i++)
+        //        {
+        //            Section sectionToMove = GetSectionByPosition(i);
+        //            sectionToMove.SetPosition(sectionToMove.GetPosition() - 1);
+        //        }
 
-                UpdateDate();
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("section", "The passed section does not exist in this module.");
-            }
-        }
+        //        // Remove the section
+        //        Sections.Remove(section);
+
+        //        // Update the startRows for each section
+        //        SetStartRowsByPosition(posOldSection);
+
+        //        UpdateDate();
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentOutOfRangeException("section", "The passed section does not exist in this module.");
+        //    }
+        //}
 
 
-        private Section GetSectionByPosition(int position)
-        {
-            foreach (Section section in Sections)
-            {
-                if (section.GetPosition() == position)
-                {
-                    return section;
-                }
-            }
-            return null;
-        }
+        //private Section GetSectionByPosition(int position)
+        //{
+        //    foreach (Section section in Sections)
+        //    {
+        //        if (section.GetPosition() == position)
+        //        {
+        //            return section;
+        //        }
+        //    }
+        //    return null;
+        //}
 
-        private void SetStartRowsByPosition(int startPosition)
-        {
-            for (int i = startPosition; i <= Sections.Count - 1; i++)
-            {
-                Section sectionToUpdateStartRow = GetSectionByPosition(i);
-                if (i == 0)
-                {
-                    // if this is the first section, then startRow will always be 1
-                    sectionToUpdateStartRow.SetStartRow(Constants.defaultFirstRow);
-                }
-                else
-                {
-                    // otherwise, startRow = startRow(previous) + numRows(previous)
-                    Section previousSection = GetSectionByPosition(i - 1);
-                    int startRow = previousSection.GetStartRow() +
-                        previousSection.GetRowCounter();
-                    sectionToUpdateStartRow.SetStartRow(startRow);
-                }
-            }
-        }
-
-        // TODO: IMPORTANT - since we have a dateLastModified field, we'll need to invoke methods that would
-        // update fields and properties, enabling us to update this field. Or else, by updating properties
-        // directly, this field won't get updated.
-
-        private void UpdateDate()
-        {
-            DateLastModified = DateTime.Now;
-        }
+        //private void SetStartRowsByPosition(int startPosition)
+        //{
+        //    //for (int i = startPosition; i <= Sections.Count - 1; i++)
+        //    //{
+        //    //    Section sectionToUpdateStartRow = GetSectionByPosition(i);
+        //    //    if (i == 0)
+        //    //    {
+        //    //        // if this is the first section, then startRow will always be 1
+        //    //        sectionToUpdateStartRow.SetStartRow(Constants.defaultFirstRow);
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        // otherwise, startRow = startRow(previous) + numRows(previous)
+        //    //        Section previousSection = GetSectionByPosition(i - 1);
+        //    //        int startRow = previousSection.GetStartRow() +
+        //    //            previousSection.GetRowCounter();
+        //    //        sectionToUpdateStartRow.SetStartRow(startRow);
+        //    //    }
+        //    //}
+        //}
 
         #endregion
     }

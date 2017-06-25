@@ -16,11 +16,11 @@
       "mTitle": "The first module",
       "mDesc": "Description of the first module",
       "mShowDesc": true,
-      "sections": [
+      "children": [
         {
           "sLetter": "A",
           "sTitle": "The first section",
-          "questionBlocks": [
+          "children": [
             {
               "qNum": "Q1",
               "qTitle": "Gender",
@@ -36,12 +36,12 @@
               "qTypeInt": null,
               "qText": "What is your gender?",
               "respInst": "Please select one answer below.",
-              "responses": [
+              "children": [
                 {
                   "code": 1,
                   "rText": "Male",
                   "rFlags": [ "Generic" ],
-                  "rId": 1,
+                  "SelfId": 1,
                   "dateCreated": null,
                   "dateLastModified": null
                 },
@@ -49,7 +49,7 @@
                   "code": 2,
                   "rText": "Female",
                   "rFlags": [ "Generic" ],
-                  "rId": 2,
+                  "SelfId": 2,
                   "dateCreated": null,
                   "dateLastModified": null
                 },
@@ -57,14 +57,14 @@
                   "code": 98,
                   "rText": "Prefer not to answer",
                   "rFlags": [ "PreferNo" ],
-                  "rId": 2,
+                  "SelfId": 2,
                   "dateCreated": null,
                   "dateLastModified": null
                 }
               ],
               "startRow": 3,
               "endRow": null,
-              "qId": 1,
+              "SelfId": 1,
               "qPosition": 0,
               "rowCounter": 12,
               "dateCreated": null,
@@ -85,10 +85,10 @@
               "qTypeInt": null,
               "qText": "What is your gender?",
               "respInst": "Please select one answer below.",
-              "responses": null,
+              "children": null,
               "startRow": 30,
               "endRow": null,
-              "qId": 2,
+              "selfId": 2,
               "qPosition": 1,
               "rowCounter": 9,
               "dateCreated": null,
@@ -97,7 +97,7 @@
           ],
           "startRow": 1,
           "endRow": null,
-          "sId": 1,
+          "selfId": 1,
           "sPosition": 0,
           "rowCounter": 10,
           "dateCreated": null,
@@ -106,10 +106,10 @@
         {
           "sLetter": "B",
           "sTitle": null,
-          "questionBlocks": [],
+          "children": [],
           "startRow": 500,
           "endRow": null,
-          "sId": 2,
+          "selfId": 2,
           "sPosition": 1,
           "rowCounter": 20,
           "dateCreated": null,
@@ -117,7 +117,7 @@
         }
       ],
       "sheetNum": 1,
-      "mId": 1,
+      "selfId": 1,
       "dateCreated": null,
       "dateLastModified": null
     },
@@ -126,30 +126,30 @@
       "mTitle": "The second module",
       "mDesc": "Description of the second module",
       "mShowDesc": false,
-      "sections": [
+      "children": [
         {
           "sLetter": "C",
           "sTitle": "The third section in the second sheet",
-          "questionBlocks": [],
+          "children": [],
           "startRow": 1,
           "endRow": null,
-          "sId": 3,
+          "selfId": 3,
           "dateCreated": null,
           "dateLastModified": null
         },
         {
           "sLetter": null,
           "sTitle": "IT'S THE FINAL COUNTDOWN!",
-          "questionBlocks": [],
+          "children": [],
           "startRow": 250,
           "endRow": null,
-          "sId": 4,
+          "selfId": 4,
           "dateCreated": null,
           "dateLastModified": null
         }
       ],
       "sheetNum": 2,
-      "mId": 2,
+      "selfId": 2,
       "dateCreated": null,
       "dateLastModified": null
     }

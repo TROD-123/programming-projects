@@ -10,7 +10,7 @@ namespace QuestionnaireSpecGenerator
     ///  This class represents a single question, containing its attributes as well as its list
     ///  of possible responses.
     /// </summary>
-    public class QuestionBlock
+    public class QuestionBlock : QuestionnaireObject<Response>
     {
         #region outward expressions
 
@@ -128,100 +128,8 @@ namespace QuestionnaireSpecGenerator
         /// The list of response options for the respondent to select from, depending on the question. Can be <c>null</c> if
         /// the <see cref="QType"/> is <c>BreakScreen</c>, <c>TextField</c> or <c>Marker</c>.
         /// </summary>
-        public List<Response> Responses { get; set; }
+        //public List<Response> Responses { get; set; }
 
-        #endregion
-
-        #region locative properties
-
-        /// <summary>
-        /// The question position. Determines the order in which questions are shown in the section, from
-        ///  top to bottom.
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>Must not be <c>null</c>.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>Must be a unique <c>int</c> per question within the same section.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int qPosition { get; set; } // TODO: Need to add to JSON
-
-        /// <summary>
-        /// The excel row of where the <see cref="QuestionBlock"/> begins. This is a <b>user-defined</b> value, representing 
-        ///  the row number containing the question number and title. This determines where in the sheet the 
-        ///  <see cref="QuestionBlock"/> gets drawn.
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>
-        ///             Must be a unique <c>int</c> that can't conflict with any other row as defined by
-        ///             other <see cref="Sections"/> or <see cref="QuestionBlocks"/> within the same <see cref="Section"/>.
-        ///         </description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int StartRow { get; set; }
-
-        // TODO: POTENTIALLY DEPRECATE
-        /// <summary>
-        /// The excel row of where the <see cref="QuestionBlock"/> ends. In the usual case, this is an <b>auto-defined</b> 
-        ///     value, representing the last row of the <see cref="QuestionBlock"/>. This is purely a reference value, 
-        ///     which does not affect where the <see cref="QuestionBlock"/> gets drawn on the sheet (see <see cref="StartRow"/>).
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>
-        ///             Must be a unique <c>int</c> that can't conflict with any other row as defined by
-        ///             other <see cref="Sections"/> or <see cref="QuestionBlocks"/> within the same <see cref="Section"/>.
-        ///         </description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int EndRow { get; set; }
-
-        /// <summary>
-        /// Keeps track of the number of rows the question block uses. Includes an extra row for bottom padding.
-        /// <para>
-        /// <b>Note: </b>Unless initializing, do NOT directly modify this counter.
-        /// </para>
-        /// </summary>
-        private int rowCounter { get; set; } // TODO: Need to add to JSON
-
-        #endregion
-
-        #region internal properties
-
-        /// <summary>
-        /// The question unique identifier
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>Must not be <c>null</c>.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>Must be a unique <c>int</c> per question, across all modules.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int QId { get; set; }
-
-        /// <summary>
-        /// The parent id. For a question, this is the id of the section which contains the question.
-        /// </summary>
-        public int PId { get; set; }
-
-        /// <summary>
-        /// The <see cref="QuestionBlock"/> creation date and time
-        /// </summary>
-        public DateTime DateCreated { get; set; }
-
-        /// <summary>
-        /// The last time <see cref="QuestionBlock"/> was modified
-        /// </summary>
-        public DateTime DateLastModified { get; set; }
 
         #endregion
 
@@ -261,7 +169,7 @@ namespace QuestionnaireSpecGenerator
         {
             DateCreated = DateTime.Now;
 
-            PId = pId;
+            ParentId = pId;
             QNum = qNum;
             QTitle = qTitle;
             BaseLabel = baseLabel;
@@ -274,101 +182,35 @@ namespace QuestionnaireSpecGenerator
             QText = qText;
             RespInst = respInst;
 
-            rowCounter = Constants.questionBlockInitHeight;
-
-            // TODO: Need to set startRow. This can be done via the section
-
-
-            QId = Toolbox.GenerateRandomId(container, QreObjTypes.QuestionBlock);
+            SelfId = Toolbox.GenerateRandomId(container, QreObjTypes.QuestionBlock);
 
             // Add the responses
             if (responses != null)
             {
                 foreach (Response response in responses)
                 {
-                    AddResponse(response);
+                    AddChild(response);
                 }
             }
             container.AddQuestion(this);
             UpdateDate();
         }
 
-        /// <summary>
-        /// Adds the response to the list of responses for the <see cref="QuestionBlock"/>. Sets each
-        /// <see cref="Response.PId"/> to the current <see cref="QuestionBlock.QId"/>. Also
-        /// increments <see cref="rowCounter"/> by 1 as well as the <see cref="DateLastModified"/>.
-        /// <para>
-        /// Note, when creating the response to be added, no need to put down a Parent ID, since that is
-        /// done here!
-        /// </para>
-        /// </summary>
-        /// <param name="response">The response to add.</param>
-        public void AddResponse(Response response)
-        {
-            response.PId = QId;
-            Responses.Add(response);
-            rowCounter++;
-            UpdateDate();
-        }
+        // TODO: REMOVE FROM HERE ONCE IMPLEMENTED IN BASE CLASS
+        //public void ChangeParent(int newPId)
+        //{
+        //    // Need to get the current section and the target sections, and modify the question lists from there
+        //    int oldPId = ParentId;
 
-        /// <summary>
-        /// Removes the response from the list of responses for the <see cref="QuestionBlock"/>. Also
-        /// decrements <see cref="rowCounter"/> by 1.
-        /// </summary>
-        /// <param name="response">The response to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException">response - The passed response does not exist in this question.</exception>
-        public void RemoveResponse(Response response)
-        {
-            if (Responses.Contains(response))
-            {
-                Responses.Remove(response);
-                rowCounter--;
-                UpdateDate();
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("response", "The passed response does not exist in this question.");
-            }
-        }
+        //    //Section oldParent = DataContainer.GetSectionById(oldPId);
+        //    //Section newParent = DataContainer.GetSectionById(newPId);
 
-        // TODO: Still need to implement
-        public void ChangeParent(int newPId)
-        {
-            // Need to get the current section and the target sections, and modify the question lists from there
-            int oldPId = PId;
-
-            //Section oldParent = DataContainer.GetSectionById(oldPId);
-            //Section newParent = DataContainer.GetSectionById(newPId);
-
-            //oldParent.RemoveQuestion(this);
+        //    //oldParent.RemoveQuestion(this);
     
-            // will also need to reflect the changed parent id here
-            PId = newPId;
-            //newParent.AddQuestion(this);
-        }
-
-
-        public int GetNumRows()
-        {
-            return rowCounter;
-        }
-
-        public void UpdateStartRow(int startRow)
-        {
-            StartRow = startRow;
-        }
-
-        /// <summary>
-        /// Updates <see cref="DateLastModified"/>. Needs to be called in methods that update <see cref="QuestionBlock"/> elements.
-        /// </summary>
-        private void UpdateDate()
-        {
-            DateLastModified = DateTime.Now;
-        }
-
-        // TODO: NOTE: Since the DataContainer class houses all qre objects, we should give this class the cross-object functionality
-        // e.g. changing parents, setting parents. So that we don't have to define redundant methods across each of the classes
-
+        //    // will also need to reflect the changed parent id here
+        //    ParentId = newPId;
+        //    //newParent.AddQuestion(this);
+        //}   
 
         #endregion
     }

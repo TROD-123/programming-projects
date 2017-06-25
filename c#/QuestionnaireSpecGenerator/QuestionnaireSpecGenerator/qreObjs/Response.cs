@@ -9,7 +9,7 @@ namespace QuestionnaireSpecGenerator
     /// <summary>
     ///  A class for a single response and its attributes.
     /// </summary>
-    public class Response
+    public class Response : QreObjBase
     {
         #region outward expressions
 
@@ -30,31 +30,11 @@ namespace QuestionnaireSpecGenerator
 
         #endregion
 
-        #region internal properties
+        public override void UpdateDate()
+        {
+            DateModified = DateTime.Now;
 
-        /// <summary>
-        /// The response unique identifier
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>Must not be <c>null</c>.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>Must be a unique <c>int</c> per response, across all responses and modules.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        public int RId { get; set; }
-
-
-        /// <summary>
-        /// The parent id. For a response, this is the id of the question which contains the response.
-        /// </summary>
-        public int PId { get; set; }
-
-        public DateTime DateCreated { get; set; }
-        public DateTime DateLastModified { get; set; }
-
-        #endregion
+            // TODO: Need to implement method that will store the changes user makes to the object
+        }
     }
 }
