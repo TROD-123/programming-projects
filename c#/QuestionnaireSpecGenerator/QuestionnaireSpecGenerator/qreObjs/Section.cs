@@ -87,18 +87,16 @@ namespace QuestionnaireSpecGenerator
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Section" /> class and adds it to the <see cref="DataContainer" />.
+        /// Initializes a new instance of the <see cref="Section" /> class.
         /// </summary>
-        /// <param name="container">The main data container (<b>required</b>).</param>
-        /// <param name="pId">The parent identifier (<b>required</b>).</param>
-        /// <param name="position">The position in the module (<b>required</b>).</param>
+        /// <param name="pId">The parent identifier.</param>
         /// <param name="sLetter">The section letter.</param>
         /// <param name="sTitle">The section title.</param>
         /// <param name="sDesc">The s desc.</param>
         /// <param name="sShowDesc">if set to <c>true</c> [s show desc].</param>
         /// <param name="questionBlocks">The question blocks contained in the section.</param>
-        public Section(DataContainer container, int pId, int position, string sLetter = "XYZ", string sTitle = "Section Name",
-            string sDesc = "The section description", bool sShowDesc = false, List<QuestionBlock> questionBlocks = null)
+        public Section(int pId, string sLetter, string sTitle,
+            string sDesc, bool sShowDesc, List<QuestionBlock> questionBlocks)
         {
             DateCreated = DateTime.Now;
 
@@ -107,9 +105,9 @@ namespace QuestionnaireSpecGenerator
             STitle = sTitle;
             SDesc = sDesc;
             SShowDesc = sShowDesc;
-            //Position = position;
 
-            SelfId = Toolbox.GenerateRandomId(container, QreObjTypes.Section);
+            Children = new List<QuestionBlock>();
+
 
             // Add the question blocks (also determine start rows here)
             if (questionBlocks != null)
@@ -119,7 +117,6 @@ namespace QuestionnaireSpecGenerator
                     AddChild(question);
                 }
             }
-            container.AddSection(this);
             UpdateDate();
         }
 

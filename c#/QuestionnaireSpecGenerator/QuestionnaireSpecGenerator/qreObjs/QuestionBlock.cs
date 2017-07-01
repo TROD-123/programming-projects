@@ -145,27 +145,27 @@ namespace QuestionnaireSpecGenerator
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestionBlock"/> class and adds it to the <see cref="DataContainer"/>.
+        /// Initializes a new instance of the <see cref="QuestionBlock" /> class.
         /// </summary>
-        /// <param name="container">The main data container (<b>required</b>).</param>
         /// <param name="pId">The parent identifier (<b>required</b>).</param>
+        /// <param name="position">The position in the section.</param>
         /// <param name="qNum">The question number.</param>
         /// <param name="qTitle">The question title.</param>
         /// <param name="baseLabel">The base label.</param>
         /// <param name="baseDef">The base definition.</param>
         /// <param name="comments">The comments.</param>
-        /// <param name="progFlagsNonADC">The list of Non-ADC programming flags. Used to set the <see cref="ProgInst"/> string.</param>
-        /// <param name="progFlagsADC">The list of ADC programming flags. Used to set the <see cref="ProgInst"/> string.</param>
-        /// <param name="rFlag">The routing flag. Used to set the <see cref="RoutInst"/> string.</param>
-        /// <param name="qTypeInt">The question type. Used to set the <see cref="QType"/> string.</param>
+        /// <param name="progFlagsNonADC">The list of Non-ADC programming flags. Used to set the <see cref="ProgInst" /> string.</param>
+        /// <param name="progFlagsADC">The list of ADC programming flags. Used to set the <see cref="ProgInst" /> string.</param>
+        /// <param name="rFlag">The routing flag. Used to set the <see cref="RoutInst" /> string.</param>
+        /// <param name="qTypeInt">The question type. Used to set the <see cref="QType" /> string.</param>
         /// <param name="qText">The question text.</param>
         /// <param name="respInst">The respondent instruction.</param>
         /// <param name="responses">The list of responses.</param>
-        public QuestionBlock(DataContainer container, int pId, string qNum = "QNUM", string qTitle = "Question title",
-            string baseLabel = "Base label", string baseDef = "Base definition", string comments = "Comments",
-            List<ProgFlagsNonADC> progFlagsNonADC = null, List<ProgFlagsADC> progFlagsADC = null, 
-            RoutingFlags rFlag = RoutingFlags.NextQuestion, QuestionType qTypeInt = QuestionType.SingleCode,
-            string qText = "Question text", string respInst = "Respondent instruction", List<Response> responses = null)
+        public QuestionBlock(int pId, string qNum, string qTitle,
+            string baseLabel, string baseDef, string comments,
+            List<ProgFlagsNonADC> progFlagsNonADC, List<ProgFlagsADC> progFlagsADC, 
+            RoutingFlags rFlag, QuestionType qTypeInt,
+            string qText, string respInst, List<Response> responses)
         {
             DateCreated = DateTime.Now;
 
@@ -182,7 +182,7 @@ namespace QuestionnaireSpecGenerator
             QText = qText;
             RespInst = respInst;
 
-            SelfId = Toolbox.GenerateRandomId(container, QreObjTypes.QuestionBlock);
+            Children = new List<Response>();
 
             // Add the responses
             if (responses != null)
@@ -192,7 +192,6 @@ namespace QuestionnaireSpecGenerator
                     AddChild(response);
                 }
             }
-            container.AddQuestion(this);
             UpdateDate();
         }
 

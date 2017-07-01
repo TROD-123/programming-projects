@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace QuestionnaireSpecGenerator
         where T : QreObjBase
     {
         /// <summary>
-        /// List of children belonging to the parent class. Sorted by <see cref="QreObjBase.Position"/>.
+        /// List of children belonging to the parent class. Sorted by position, determined during add.
         /// </summary>
         public List<T> Children { get; set; }
 
@@ -32,11 +33,11 @@ namespace QuestionnaireSpecGenerator
         public void AddChild(T child, int position = -1)
         {
             child.ParentId = SelfId;
-            if (position != -1)
+            if (position != -1 && position <= Children.Count)
             {
                 Children.Insert(position, child);
             }
-            else if (position >= 0)
+            else if (position == -1 || position > Children.Count)
             {
                 Children.Add(child);
             }
@@ -45,6 +46,30 @@ namespace QuestionnaireSpecGenerator
                 throw new ArgumentOutOfRangeException("position", "The passed position is invalid. Must be 0 or greater.");
             }
             UpdateDate();
+        }
+
+        /// <summary>
+        /// Adds a list of child objects to the list of children for the parent class, at the position specified.
+        /// </summary>
+        /// <param name="children">The list of children to add, represented as a <see cref="Tuple"/> with a child of 
+        /// type <see cref="QuestionnaireObject{T}"/> and an <see cref="int"/> for the position.</param>
+        /// <exception cref="ArgumentOutOfRangeException">children - The passed list is null. No action taken.</exception>
+        public void AddChildren(List<Tuple<T,int>> children)
+        {
+            if (children != null)
+            {
+                foreach (Tuple<T, int> child in children)
+                {
+                    T obj = child.Item1;
+                    int index = child.Item2;
+                    AddChild(obj, index);
+
+                }
+                UpdateDate();
+            } else
+            {
+                throw new ArgumentOutOfRangeException("children", "The passed list is null. No action taken.");
+            }
         }
 
         /// <summary>

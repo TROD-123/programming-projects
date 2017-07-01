@@ -51,6 +51,7 @@
     <Compile Include="enum\ResponseFlags.cs" />
     <Compile Include="ExcelGenerator.cs" />
     <Compile Include="JsonHandler.cs" />
+    <Compile Include="QreObjBase.cs" />
     <Compile Include="qreObjs\Module.cs" />
     <Compile Include="enum\Office.cs" />
     <Compile Include="enum\ProgFlagsNonADC.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="qreObjs\Section.cs" />
     <Compile Include="qreObjs\SectionSet.cs" />
     <Compile Include="QreObjTypes.cs" />
+    <Compile Include="QuestionnaireObject.cs" />
     <Compile Include="QuestionType.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="Toolbox.cs" />

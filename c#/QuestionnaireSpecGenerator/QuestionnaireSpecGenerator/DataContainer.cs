@@ -31,7 +31,7 @@ namespace QuestionnaireSpecGenerator
         /// <value>
         /// The modules.
         /// </value>
-        private List<Module> modules;
+        public List<Module> modules;
 
         /// <summary>
         /// A list containing all the sections in the <see cref="Questionnaire"/> object.
@@ -69,19 +69,55 @@ namespace QuestionnaireSpecGenerator
         /// </summary>
         private List<int> questionBlockIds;
 
+        /// <summary>
+        /// The type dictionary. Alternative to switch on type for C#: https://stackoverflow.com/questions/708911/using-case-switch-and-gettype-to-determine-the-object
+        /// </summary>
+        private Dictionary<Type, QreObjTypes> typeDict = new Dictionary<Type, QreObjTypes>
+        {
+            {typeof(Module), QreObjTypes.Module},
+            {typeof(Section), QreObjTypes.Section},
+            {typeof(QuestionBlock), QreObjTypes.QuestionBlock},
+            {typeof(Response), QreObjTypes.Response}
+        };
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataContainer"/> class. Also initializes questionnaire
-        /// element lists.
+        /// Initializes a new instance of the <see cref="DataContainer"/> class. Empty constructor.
+        /// </summary>
+        public DataContainer()
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the<see cref="DataContainer"/> class. 
         /// </summary>
         /// <param name="qre">The <see cref="Questionnaire"/> to store in the container. Required.</param>
         public DataContainer(Questionnaire qre)
         {
-            this.qre = qre;
-            updated = new List<QreObjTypes>();
-            modules = ExtractModules(qre);
-            sections = ExtractSections(qre);
-            questionBlocks = ExtractQuestionBlocks(qre);
+            InitializeQre(qre);
+        }
+
+        /// <summary>
+        /// Initializes questionnaire element lists. Only works if qre had not already been initialized.
+        /// </summary>
+        /// <param name="qre"></param>
+        public void InitializeQre(Questionnaire qre)
+        {
+            if (this.qre != null)
+            {
+                this.qre = qre;
+                updated = new List<QreObjTypes>();
+                moduleIds = new List<int>();
+                sectionIds = new List<int>();
+                questionBlockIds = new List<int>();
+                modules = ExtractModules(qre);
+                sections = ExtractSections(qre);
+                questionBlocks = ExtractQuestionBlocks(qre);
+            } 
+            else
+            {
+                throw new ArgumentException("qre", "A qre has already been initialized. You need to create a new DataContainer to hold the new qre object.");
+            }
         }
 
         /// <summary>
@@ -91,6 +127,7 @@ namespace QuestionnaireSpecGenerator
         /// <param name="type">The type.</param>
         private void FlagUpdate(QreObjTypes type)
         {
+            // defensive code
             if (updated == null)
             {
                 updated = new List<QreObjTypes>();
@@ -102,6 +139,8 @@ namespace QuestionnaireSpecGenerator
             }
         }
 
+        // TODO: Try to remove the redundancies in the 3 code adds below
+
         /// <summary>
         /// Extracts all of the modules in the qre. Only used as a helper during initialization.
         /// </summary>
@@ -112,8 +151,13 @@ namespace QuestionnaireSpecGenerator
         /// </returns>
         private List<Module> ExtractModules(Questionnaire qre)
         {
-            FlagUpdate(QreObjTypes.Module);
-            return qre.Modules;
+            List<Module> modules = new List<Module>();
+            if (qre.Children != null)
+            {
+                FlagUpdate(QreObjTypes.Module);
+                modules = qre.Children;
+            }
+            return modules;
         }
 
         /// <summary>
@@ -127,14 +171,20 @@ namespace QuestionnaireSpecGenerator
         private List<Section> ExtractSections(Questionnaire qre)
         {
             List<Section> sections = new List<Section>();
-            foreach (Module module in qre.Modules)
+            if (qre.Children != null && qre.Children.Count > 0)
             {
-                foreach (Section section in module.Children)
+                foreach (Module module in qre.Children)
                 {
-                    sections.Add(section);
+                    if (module.Children != null && module.Children.Count > 0)
+                    {
+                        foreach (Section section in module.Children)
+                        {
+                            sections.Add(section);
+                        }
+                        FlagUpdate(QreObjTypes.Section);
+                    }
                 }
             }
-            FlagUpdate(QreObjTypes.Section);
             return sections;
         }
 
@@ -149,136 +199,227 @@ namespace QuestionnaireSpecGenerator
         private List<QuestionBlock> ExtractQuestionBlocks(Questionnaire qre)
         {
             List<QuestionBlock> questionBlocks = new List<QuestionBlock>();
-            foreach (Module module in qre.Modules)
+            if (qre.Children != null && qre.Children.Count > 0)
             {
-                foreach (Section section in module.Children)
+                foreach (Module module in qre.Children)
                 {
-                    foreach (QuestionBlock questionBlock in section.Children)
+                    if (module.Children != null && module.Children.Count > 0)
                     {
-                        questionBlocks.Add(questionBlock);
+                        foreach (Section section in module.Children)
+                        {
+                            if (section.Children != null && section.Children.Count > 0)
+                            {
+                                foreach (QuestionBlock questionBlock in section.Children)
+                                {
+                                    questionBlocks.Add(questionBlock);
+                                }
+                                FlagUpdate(QreObjTypes.QuestionBlock);
+                            }
+                        }
                     }
                 }
             }
-            FlagUpdate(QreObjTypes.QuestionBlock);
             return questionBlocks;
         }
 
         /// <summary>
-        /// Adds a new module. Called via the <see cref="Module"/> constructor.
-        /// <para>Note: Called via the <see cref="Module"/> constructor.</para>
+        /// Generic method that adds a new child object. If <see cref="QreObjBase.SelfId"/> of child is not unique, or if
+        /// <see cref="QreObjBase.ParentId"/> does not exist, an exception is thrown. 
+        /// <para>
+        /// Compatible types must extend the <see cref="QreObjBase"/> class (i.e. must be <see cref="Module"/>, 
+        /// <see cref="Section"/>, or <see cref="QuestionBlock"/>).
+        /// </para>
+        /// <para>Note: To be called via the Object Generator UI.</para>
         /// </summary>
-        /// <param name="module">The module to add.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// section - The object passed contains a duplicate self id
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// section - The object passed contains an undefined parent id
-        /// </exception>
-        public void AddModule(Module module)
+        /// <typeparam name="T">Must extend <see cref="QreObjBase"/></typeparam>
+        /// <param name="child">The child object to add.</param>
+        /// <param name="position">The position.</param>
+        /// <exception cref="ArgumentOutOfRangeException">obj - The object passed contains a duplicate self id</exception>
+        /// <exception cref="ArgumentOutOfRangeException">obj - The object passed contains a duplicate self id</exception>
+        public void AddChild<T>(T child, int position) where T : QreObjBase
         {
             try
             {
-                CheckIds(QreObjTypes.Module, module.SelfId);
+                // Generate self id and make sure it is unique and parent id exists
+                QreObjTypes type = typeDict[child.GetType()];
+                child.SelfId = GenerateRandomId(type);
+                CheckIds(type, child.SelfId, child.ParentId); // DEBUGGING
 
-                // Add module through parent (this already updates the module list)
-                qre.AddModule(module);
+                switch (type)
+                {
+                    case QreObjTypes.Module:
+                        // Add module through parent
+                        qre.AddChild((Module)(object)child, position);
 
-                // TEST: Check for referential equality
-                Console.WriteLine(ReferenceEquals(qre.Modules[qre.Modules.Count - 1], modules[modules.Count - 1])); // TRUE
+                        // TEST: Check for referential equality
+                        Console.WriteLine(ReferenceEquals(qre.Children[qre.Children.Count - 1], modules[modules.Count - 1])); // TRUE
+                        break;
+                    case QreObjTypes.Section:
+                        // Add section through parent
+                        Module mParent = GetModuleById(child.ParentId);
+                        int mIndex = modules.IndexOf(mParent);
+                        Section section = (Section)(object)child; // cast
+                        modules[mIndex].AddChild(section, position);
 
-                FlagUpdate(QreObjTypes.Module);
+                        // Update section list
+                        sections.Add(section);
+
+                        // TEST: Check for referential equality
+                        int sIndex = modules[mIndex].Children.IndexOf(section);
+                        Console.WriteLine(ReferenceEquals(modules[mIndex].Children[sIndex], sections[sections.Count - 1])); // TRUE
+                        break;
+                    case QreObjTypes.QuestionBlock:
+                        // Add question through parent
+                        Section sParent = GetSectionById(child.ParentId);
+                        int spIndex = sections.IndexOf(sParent);
+                        QuestionBlock question = (QuestionBlock)(object)child; // cast
+                        sections[spIndex].AddChild(question, position);
+
+                        // Update question list
+                        questionBlocks.Add(question);
+                        FlagUpdate(QreObjTypes.QuestionBlock);
+
+                        // TEST: Check for referential equality
+                        int qIndex = sections[spIndex].Children.IndexOf(question);
+                        Console.WriteLine(ReferenceEquals(sections[spIndex].Children[qIndex], questionBlocks[questionBlocks.Count - 1])); // TRUE
+                        break;
+                    case QreObjTypes.Response:
+                        // Add response through parent. Is not logged in its own Responses list
+                        QuestionBlock qParent = GetQuestionById(child.ParentId);
+                        int qbIndex = questionBlocks.IndexOf(qParent);
+                        Response response = (Response)(object)child; // cast
+                        questionBlocks[qbIndex].AddChild(response, position);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("obj", "The object passed is not a compatible type. Object is type: " + child.GetType());
+                }
+
+                // Update object list
+                FlagUpdate(type);
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Console.WriteLine("DataContainer.AddModule threw an exception: " + e + "\n Proceeding...");
+                Console.WriteLine("DataContainer.AddChild threw an exception: " + e + "\n Proceeding...");
             }
         }
 
-        /// <summary>
-        /// Adds a new section. If id of section is not unique, an exception is thrown.
-        /// <para>Note: Called via the <see cref="Section"/> constructor.</para>
-        /// </summary>
-        /// <param name="section">The section to add.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// section - The object passed contains a duplicate self id
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// section - The object passed contains an undefined parent id
-        /// </exception>
-        public void AddSection(Section section)
+
+        public void AddChildren<T>(List<Tuple<T, int>> children) where T : QreObjBase
         {
-            try
+            foreach (Tuple<T, int> child in children)
             {
-                CheckIds(QreObjTypes.Section, section.SelfId, section.ParentId);
-
-                // Add section through parent
-                Module parent = GetModuleById(section.ParentId);
-                int index = modules.IndexOf(parent);
-                modules[index].AddChild(section);
-
-                int sIndex = modules[index].Children.IndexOf(section);
-
-                // Update section list
-                sections.Add(section);
-
-                // TEST: Check for referential equality
-                Console.WriteLine(ReferenceEquals(modules[index].Children[sIndex], sections[sections.Count - 1])); // TRUE
-
-                FlagUpdate(QreObjTypes.Section);
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                Console.WriteLine("DataContainer.AddSection threw an exception: " + e + "\n Proceeding...");               
+                AddChild(child.Item1, child.Item2);
             }
         }
 
-        /// <summary>
-        /// Adds the new question. If id of question is not unique, an exception is thrown.
-        /// <para>Note: Called via the <see cref="QuestionBlock"/> constructor.</para>
-        /// </summary>
-        /// <param name="question">The question to add.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// section - The object passed contains a duplicate self id
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// section - The object passed contains an undefined parent id
-        /// </exception>
-        public void AddQuestion(QuestionBlock question)
-        {
-            try
-            {
-                CheckIds(QreObjTypes.QuestionBlock, question.SelfId, question.ParentId);
+        ///// <summary>
+        ///// Adds a new module. Called via the <see cref="Module"/> constructor.
+        ///// <para>Note: Called via the <see cref="Module"/> constructor.</para>
+        ///// </summary>
+        ///// <param name="module">The module to add.</param>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// section - The object passed contains a duplicate self id
+        ///// </exception>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// section - The object passed contains an undefined parent id
+        ///// </exception>
+        //public void AddModule(Module module, int position)
+        //{
+        //    try
+        //    {
+        //        // Generate self id and make sure it is unique (for debugging purposes)
+        //        module.SelfId = GenerateRandomId(QreObjTypes.Module);
+        //        //CheckIds(QreObjTypes.Module, module.SelfId); // DEBUGGING
 
-                // Add question through parent
-                Section parent = GetSectionById(question.SelfId);
-                int index = sections.IndexOf(parent);
-                sections[index].AddChild(question);
+        //        // Add module through parent (this already updates the module list)
+        //        qre.AddChild(module, position);
+        //        FlagUpdate(QreObjTypes.Module);
 
-                int qIndex = sections[index].Children.IndexOf(question);
+        //        // TEST: Check for referential equality
+        //        Console.WriteLine(ReferenceEquals(qre.Children[qre.Children.Count - 1], modules[modules.Count - 1])); // TRUE
 
-                // Update question list
-                questionBlocks.Add(question);
+        //    }
+        //    catch (ArgumentOutOfRangeException e)
+        //    {
+        //        Console.WriteLine("DataContainer.AddModule threw an exception: " + e + "\n Proceeding...");
+        //    }
+        //}
 
-                // TEST: Check for referential equality
-                Console.WriteLine(ReferenceEquals(sections[index].Children[qIndex], questionBlocks[questionBlocks.Count - 1])); // TRUE
+        ///// <summary>
+        ///// Adds a new section. If id of section is not unique, an exception is thrown.
+        ///// <para>Note: Called via the <see cref="Section"/> constructor.</para>
+        ///// </summary>
+        ///// <param name="section">The section to add.</param>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// section - The object passed contains a duplicate self id
+        ///// </exception>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// section - The object passed contains an undefined parent id
+        ///// </exception>
+        //public void AddSection(Section section, int position)
+        //{
+        //    try
+        //    {
+        //        // Generate self id and make sure it is unique and parent id exists
+        //        section.SelfId = GenerateRandomId(QreObjTypes.Section);
+        //        CheckIds(QreObjTypes.Section, section.SelfId, section.ParentId);
 
-                FlagUpdate(QreObjTypes.QuestionBlock);
+        //        // Add section through parent
+        //        Module parent = GetModuleById(section.ParentId);
+        //        int index = modules.IndexOf(parent);
+        //        modules[index].AddChild(section, position);
 
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                Console.WriteLine("DataContainer.AddQuestion threw an exception: " + e + "\n Proceeding...");
-            }
-        }
+        //        // Update section list
+        //        sections.Add(section);
+        //        FlagUpdate(QreObjTypes.Section);
 
-        /// <summary>
-        /// Gets the next sheet number.
-        /// </summary>
-        /// <returns></returns>
-        public int GetNextSheetNum()
-        {
-            return modules.Count + 1;
-        }
+        //        // TEST: Check for referential equality
+        //        int sIndex = modules[index].Children.IndexOf(section);
+        //        Console.WriteLine(ReferenceEquals(modules[index].Children[sIndex], sections[sections.Count - 1])); // TRUE
+        //    }
+        //    catch (ArgumentOutOfRangeException e)
+        //    {
+        //        Console.WriteLine("DataContainer.AddSection threw an exception: " + e + "\n Proceeding...");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Adds the new question. If id of question is not unique, an exception is thrown.
+        ///// <para>Note: Called via the <see cref="QuestionBlock"/> constructor.</para>
+        ///// </summary>
+        ///// <param name="question">The question to add.</param>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// section - The object passed contains a duplicate self id
+        ///// </exception>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// section - The object passed contains an undefined parent id
+        ///// </exception>
+        //public void AddQuestion(QuestionBlock question, int position)
+        //{
+        //    try
+        //    {
+        //        // Generate self id and make sure it is unique and parent id exists
+        //        question.SelfId = GenerateRandomId(QreObjTypes.QuestionBlock);
+        //        CheckIds(QreObjTypes.QuestionBlock, question.SelfId, question.ParentId);
+
+        //        // Add question through parent
+        //        Section parent = GetSectionById(question.SelfId);
+        //        int index = sections.IndexOf(parent);
+        //        sections[index].AddChild(question, position);
+
+        //        // Update question list
+        //        questionBlocks.Add(question);
+        //        FlagUpdate(QreObjTypes.QuestionBlock);
+
+        //        // TEST: Check for referential equality
+        //        int qIndex = sections[index].Children.IndexOf(question);
+        //        Console.WriteLine(ReferenceEquals(sections[index].Children[qIndex], questionBlocks[questionBlocks.Count - 1])); // TRUE
+        //    }
+        //    catch (ArgumentOutOfRangeException e)
+        //    {
+        //        Console.WriteLine("DataContainer.AddQuestion threw an exception: " + e + "\n Proceeding...");
+        //    }
+        //}
 
         /// <summary>
         /// Checks whether the self id is unique, and whether the parent id already exists. Raises an exception if either
@@ -293,7 +434,7 @@ namespace QuestionnaireSpecGenerator
         /// <exception cref="ArgumentOutOfRangeException">
         /// pId - The object passed contains an undefined parent id
         /// </exception>
-        private void CheckIds(QreObjTypes type, int id, int pId = -1)
+        private void CheckIds(QreObjTypes type, int id, int pId)
         {
             List<int> selfIds, parentIds;
 
@@ -305,7 +446,7 @@ namespace QuestionnaireSpecGenerator
             {
                 case QreObjTypes.Module: // no parent here
                     selfIds = moduleIds;
-                    parentIds = new List<int>();
+                    parentIds = null;
                     break;
                 case QreObjTypes.Section:
                     selfIds = sectionIds;
@@ -330,7 +471,7 @@ namespace QuestionnaireSpecGenerator
             }
 
             // Confirm parent id exists (for non-Module objects)
-            if (pId != -1 && !parentIds.Contains(pId))
+            if (parentIds != null && !parentIds.Contains(pId))
             {
                 throw new ArgumentOutOfRangeException("section",
                     "The object " + type + " passed contains an undefined parent id: " + pId);
@@ -390,6 +531,52 @@ namespace QuestionnaireSpecGenerator
                 default:
                     throw new ArgumentOutOfRangeException("type", "Incompatible type passed. " +
                         "Only accepts Module, Section, and Questionblock qre object types.");
+            }
+        }
+
+        /// <summary>
+        /// Generates the random identifier code for a given questionnaire item type. Looks through an internalized
+        /// list of ids currently taken for a provided type, and outputs an unused id for that type.
+        /// <para>
+        /// <b>Definition:</b> A non-zero, positive <see cref="int"/> with an upper limit of <see cref="int.MaxValue"/>.
+        /// </para>
+        /// </summary>
+        /// <param name="type">
+        /// The type of the object requesting a unique identifier. Must be one of:
+        /// <list type="number">
+        /// <item><description><see cref="QreObjTypes.Module"/></description></item>
+        /// <item><description><see cref="QreObjTypes.Section"/></description></item>
+        /// <item><description><see cref="QreObjTypes.QuestionBlock"/></description></item>
+        /// </list>
+        /// </param>
+        /// <returns>A unique id for the given <c>Type</c>. Returns <c>-1</c> if an exception occurs.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// type - Incompatible type passed. Only accepts Module, Section, and Questionblock qre object types.
+        /// </exception>
+        private int GenerateRandomId(QreObjTypes type)
+        {
+            List<int> usedIds;
+            try
+            {
+                usedIds = GetIds(type);
+                int i = 1;
+                while (true)
+                {
+                    if (usedIds.BinarySearch(i) < 0)
+                    {
+                        return i;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("GenerateRandomId threw an exception: " + e + "\n Returning -1...");
+                return -1;
             }
         }
 

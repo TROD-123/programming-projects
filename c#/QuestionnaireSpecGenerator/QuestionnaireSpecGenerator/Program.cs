@@ -40,7 +40,9 @@ namespace QuestionnaireSpecGenerator
             Questionnaire qre = JsonHandler.DeserializeJsonFromFile(@".\..\..\json_qreTest.json");
 
             //Tester.TestModifyQreExistingObjectsIndirectly(qre);
-            Tester.TestRandomIntGenerator(qre);
+            //Tester.TestRandomIntGenerator(qre);
+            //Tester.TestGetObjectById(qre);
+            Tester.TestCreateQreNoJson();
 
 
 

@@ -30,21 +30,6 @@ namespace QuestionnaireSpecGenerator
         /// </summary>
         public int ParentId { get; set; }
 
-        // TODO: POTENTIALLY DEPRECATE POSITION FIELD
-        /// <summary>
-        /// Object's position within the parent object.
-        /// <para>Requirements:</para>
-        /// <list type="number">
-        ///     <item>
-        ///         <description>Must not be <c>null</c>.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>Must be a unique <c>int</c> per child within the same parent.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        //public int Position { get; set; }
-
         /// <summary>
         /// Object creation date and time.
         /// </summary>

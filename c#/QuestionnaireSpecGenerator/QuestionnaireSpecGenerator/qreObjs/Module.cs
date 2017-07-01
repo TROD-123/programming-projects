@@ -40,11 +40,6 @@ namespace QuestionnaireSpecGenerator
         /// </summary>
         public bool MShowDesc { get; set; }
 
-        ///// <summary>
-        ///// The sections in the module, stored as a list.
-        ///// </summary>
-        //public List<Section> Sections { get; set; }
-
         #endregion
 
         #region Methods
@@ -59,16 +54,14 @@ namespace QuestionnaireSpecGenerator
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Module" /> class and adds it to the <see cref="DataContainer"/>.
+        /// Initializes a new instance of the <see cref="Module" /> class.
         /// </summary>
-        /// <param name="container">The main data container (<b>required</b>).</param>
         /// <param name="mNum">The module number.</param>
         /// <param name="mTitle">The module title.</param>
         /// <param name="mDesc">The module description.</param>
         /// <param name="mShowDesc">If set to <c>true</c>, show the module description.</param>
-        /// <param name="sections">The sections of the module.</param>
-        public Module(DataContainer container, int mNum = 0, string mTitle = "Module name", 
-            string mDesc = "Module description", bool mShowDesc = false, List<Section> sections = null)
+        /// <param name="sections">The sections of the module, paired with an index.</param>
+        public Module(int mNum, string mTitle, string mDesc, bool mShowDesc, List<Tuple<Section, int>> sections)
         {
             DateCreated = DateTime.Now;
 
@@ -77,20 +70,13 @@ namespace QuestionnaireSpecGenerator
             MDesc = mDesc;
             MShowDesc = mShowDesc;
 
-            //Position = container.GetNextSheetNum();
+            Children = new List<Section>();
 
-            SelfId = Toolbox.GenerateRandomId(container, QreObjTypes.Module);
-
-            // Add the sections (also determine start rows here)
+            // Add the sections
             if (sections != null)
             {
-                foreach (Section section in sections)
-                {
-                    AddChild(section);
-                }
+                AddChildren(sections);
             }
-
-            container.AddModule(this);
             UpdateDate();
         }
 

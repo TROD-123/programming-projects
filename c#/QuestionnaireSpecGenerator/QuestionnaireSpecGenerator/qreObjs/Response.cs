@@ -30,6 +30,41 @@ namespace QuestionnaireSpecGenerator
 
         #endregion
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="Response"/> class from being created. Used for deserialization
+        /// by <see cref="JsonHandler"/>.
+        /// </summary>
+        private Response()
+        {
+            // NOTE: Beware to NOT call UpdateDate() when merely DESERIALIZING.
+        }
+
+        public Response(int pId, int code, string rText, List<ResponseFlags> rFlags)
+        {
+            DateCreated = DateTime.Now;
+
+            ParentId = pId;
+            Code = code;
+            RText = rText;
+
+            RFlags = new List<ResponseFlags>();
+
+            // Add the flags
+            if (rFlags != null)
+            {
+                foreach (ResponseFlags flag in rFlags)
+                {
+                    AddFlag(flag);
+                }
+            }
+            UpdateDate();
+        }
+
+        private void AddFlag(ResponseFlags flag)
+        {
+
+        }
+
         public override void UpdateDate()
         {
             DateModified = DateTime.Now;
